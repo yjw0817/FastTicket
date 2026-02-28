@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.price.service.impl.TicketPriceMapper">
+
+	<resultMap id="ticketPrice" type="egovframework.example.price.service.TicketPriceVO">
+		<result property="priceId"   column="PRICE_ID"/>
+		<result property="programId" column="PROGRAM_ID"/>
+		<result property="priceType" column="PRICE_TYPE"/>
+		<result property="priceNm"   column="PRICE_NM"/>
+		<result property="price"     column="PRICE"/>
+		<result property="useYn"     column="USE_YN"/>
+		<result property="programNm" column="PROGRAM_NM"/>
+	</resultMap>
+
+	<insert id="insertTicketPrice" parameterType="ticketPriceVO">
+		INSERT INTO TICKET_PRICE
+			( PRICE_ID
+			, PROGRAM_ID
+			, PRICE_TYPE
+			, PRICE_NM
+			, PRICE
+			, USE_YN )
+		VALUES
+			( #{priceId}
+			, #{programId}
+			, #{priceType}
+			, #{priceNm}
+			, #{price}
+			, #{useYn} )
+	</insert>
+
+	<update id="updateTicketPrice" parameterType="ticketPriceVO">
+		UPDATE TICKET_PRICE
+		SET PROGRAM_ID = #{programId}
+		  , PRICE_TYPE = #{priceType}
+		  , PRICE_NM   = #{priceNm}
+		  , PRICE      = #{price}
+		  , USE_YN     = #{useYn}
+		WHERE PRICE_ID = #{priceId}
+	</update>
+
+	<delete id="deleteTicketPrice" parameterType="ticketPriceVO">
+		DELETE FROM TICKET_PRICE
+		WHERE PRICE_ID = #{priceId}
+	</delete>
+
+	<select id="selectTicketPrice" parameterType="ticketPriceVO" resultMap="ticketPrice">
+		SELECT
+			T.PRICE_ID
+			, T.PROGRAM_ID
+			, T.PRICE_TYPE
+			, T.PRICE_NM
+			, T.PRICE
+			, T.USE_YN
+			, P.PROGRAM_NM
+		FROM TICKET_PRICE T
+		LEFT JOIN PROGRAM P ON T.PROGRAM_ID = P.PROGRAM_ID
+		WHERE T.PRICE_ID = #{priceId}
+	</select>
+
+	<select id="selectTicketPriceList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			T.PRICE_ID
+			, T.PROGRAM_ID
+			, T.PRICE_TYPE
+			, T.PRICE_NM
+			, T.PRICE
+			, T.USE_YN
+			, P.PROGRAM_NM
+		FROM TICKET_PRICE T
+		LEFT JOIN PROGRAM P ON T.PROGRAM_ID = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND T.PRICE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND T.PRICE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY T.PRICE_ID ASC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<select id="selectTicketPriceListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM TICKET_PRICE T
+		LEFT JOIN PROGRAM P ON T.PROGRAM_ID = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND T.PRICE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND T.PRICE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectTicketPriceListByProgram" parameterType="ticketPriceVO" resultType="egovMap">
+		SELECT
+			T.PRICE_ID
+			, T.PROGRAM_ID
+			, T.PRICE_TYPE
+			, T.PRICE_NM
+			, T.PRICE
+			, T.USE_YN
+			, P.PROGRAM_NM
+		FROM TICKET_PRICE T
+		LEFT JOIN PROGRAM P ON T.PROGRAM_ID = P.PROGRAM_ID
+		WHERE T.PROGRAM_ID = #{programId}
+		AND T.USE_YN = 'Y'
+		ORDER BY T.PRICE_TYPE ASC
+	</select>
+
+</mapper>

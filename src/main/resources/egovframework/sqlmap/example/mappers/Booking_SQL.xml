@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.booking.service.impl.BookingMapper">
+
+	<resultMap id="booking" type="egovframework.example.booking.service.BookingVO">
+		<result property="bookingId"      column="BOOKING_ID"/>
+		<result property="scheduleId"     column="SCHEDULE_ID"/>
+		<result property="memberId"       column="MEMBER_ID"/>
+		<result property="bookerNm"       column="BOOKER_NM"/>
+		<result property="bookerTel"      column="BOOKER_TEL"/>
+		<result property="bookerEmail"    column="BOOKER_EMAIL"/>
+		<result property="totalQty"       column="TOTAL_QTY"/>
+		<result property="totalAmt"       column="TOTAL_AMT"/>
+		<result property="bookingStatus"  column="BOOKING_STATUS"/>
+		<result property="paymentStatus"  column="PAYMENT_STATUS"/>
+		<result property="regDt"          column="REG_DT"/>
+		<result property="programNm"      column="PROGRAM_NM"/>
+		<result property="eventDate"      column="EVENT_DATE"/>
+		<result property="eventTime"      column="EVENT_TIME"/>
+		<result property="venueNm"        column="VENUE_NM"/>
+	</resultMap>
+
+	<!-- 예매 등록 -->
+	<insert id="insertBooking" parameterType="bookingVO">
+		INSERT INTO BOOKING
+			( BOOKING_ID
+			, SCHEDULE_ID
+			, MEMBER_ID
+			, BOOKER_NM
+			, BOOKER_TEL
+			, BOOKER_EMAIL
+			, TOTAL_QTY
+			, TOTAL_AMT
+			, BOOKING_STATUS
+			, PAYMENT_STATUS
+			, REG_DT )
+		VALUES
+			( #{bookingId}
+			, #{scheduleId}
+			, #{memberId}
+			, #{bookerNm}
+			, #{bookerTel}
+			, #{bookerEmail}
+			, #{totalQty}
+			, #{totalAmt}
+			, #{bookingStatus}
+			, #{paymentStatus}
+			, NOW() )
+	</insert>
+
+	<!-- 예매 수정 (상태 변경 및 총계 갱신) -->
+	<update id="updateBooking" parameterType="bookingVO">
+		UPDATE BOOKING
+		SET BOOKING_STATUS  = #{bookingStatus}
+		  , PAYMENT_STATUS  = #{paymentStatus}
+		  , TOTAL_QTY       = #{totalQty}
+		  , TOTAL_AMT       = #{totalAmt}
+		WHERE BOOKING_ID = #{bookingId}
+	</update>
+
+	<!-- 예매 삭제 -->
+	<delete id="deleteBooking" parameterType="bookingVO">
+		DELETE FROM BOOKING
+		WHERE BOOKING_ID = #{bookingId}
+	</delete>
+
+	<!-- 예매 단건 조회 (공연일정, 프로그램, 공연장 조인) -->
+	<select id="selectBooking" parameterType="bookingVO" resultMap="booking">
+		SELECT
+			  B.BOOKING_ID
+			, B.SCHEDULE_ID
+			, B.MEMBER_ID
+			, B.BOOKER_NM
+			, B.BOOKER_TEL
+			, B.BOOKER_EMAIL
+			, B.TOTAL_QTY
+			, B.TOTAL_AMT
+			, B.BOOKING_STATUS
+			, B.PAYMENT_STATUS
+			, B.REG_DT
+			, P.PROGRAM_NM
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, V.VENUE_NM
+		FROM BOOKING B
+		LEFT JOIN SCHEDULE S ON B.SCHEDULE_ID = S.SCHEDULE_ID
+		LEFT JOIN PROGRAM P  ON S.PROGRAM_ID  = P.PROGRAM_ID
+		LEFT JOIN VENUE V    ON P.VENUE_ID    = V.VENUE_ID
+		WHERE B.BOOKING_ID = #{bookingId}
+	</select>
+
+	<!-- 예매 목록 조회 (페이징, 검색 포함) -->
+	<select id="selectBookingList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			  B.BOOKING_ID
+			, B.SCHEDULE_ID
+			, B.MEMBER_ID
+			, B.BOOKER_NM
+			, B.BOOKER_TEL
+			, B.BOOKER_EMAIL
+			, B.TOTAL_QTY
+			, B.TOTAL_AMT
+			, B.BOOKING_STATUS
+			, B.PAYMENT_STATUS
+			, B.REG_DT
+			, P.PROGRAM_NM
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, V.VENUE_NM
+		FROM BOOKING B
+		LEFT JOIN SCHEDULE S ON B.SCHEDULE_ID = S.SCHEDULE_ID
+		LEFT JOIN PROGRAM P  ON S.PROGRAM_ID  = P.PROGRAM_ID
+		LEFT JOIN VENUE V    ON P.VENUE_ID    = V.VENUE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND B.BOOKING_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND B.BOOKER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY B.REG_DT DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<!-- 예매 총 갯수 조회 -->
+	<select id="selectBookingListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM BOOKING B
+		LEFT JOIN SCHEDULE S ON B.SCHEDULE_ID = S.SCHEDULE_ID
+		LEFT JOIN PROGRAM P  ON S.PROGRAM_ID  = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND B.BOOKING_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND B.BOOKER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+</mapper>

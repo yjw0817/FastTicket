@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- ============================================================ -->
+	<!-- 기존 SAMPLE 테이블 ID 생성 -->
+	<!-- ============================================================ -->
+	<bean name="egovIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" 	ref="mixPrefixSample" />
+		<property name="blockSize" 	value="10"/>
+		<property name="table"	   	value="IDS"/>
+		<property name="tableName"	value="SAMPLE"/>
+	</bean>
+	<bean name="mixPrefixSample" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="SAMPLE-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- ============================================================ -->
+	<!-- FastTicket ID 생성 Bean -->
+	<!-- ============================================================ -->
+
+	<!-- MEMBER: MEMBER-00001 -->
+	<bean name="memberIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixMember" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="MEMBER"/>
+	</bean>
+	<bean name="mixPrefixMember" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="MEMBER-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- VENUE: VENUE-00001 -->
+	<bean name="venueIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixVenue" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="VENUE"/>
+	</bean>
+	<bean name="mixPrefixVenue" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="VENUE-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- SEAT: SEAT-00001 -->
+	<bean name="seatIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixSeat" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="SEAT"/>
+	</bean>
+	<bean name="mixPrefixSeat" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="SEAT-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- PROGRAM: PROG-00001 -->
+	<bean name="programIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixProgram" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="PROGRAM"/>
+	</bean>
+	<bean name="mixPrefixProgram" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="PROG-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- TICKET_PRICE: PRICE-00001 -->
+	<bean name="ticketPriceIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixTicketPrice" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="TICKET_PRICE"/>
+	</bean>
+	<bean name="mixPrefixTicketPrice" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="PRICE-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- SCHEDULE: SCHD-00001 -->
+	<bean name="scheduleIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixSchedule" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="SCHEDULE"/>
+	</bean>
+	<bean name="mixPrefixSchedule" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="SCHD-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- BOOKING: BOOK-00001 -->
+	<bean name="bookingIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixBooking" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="BOOKING"/>
+	</bean>
+	<bean name="mixPrefixBooking" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="BOOK-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+	<!-- BOOKING_DETAIL: BDTL-00001 -->
+	<bean name="bookingDetailIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy"   ref="mixPrefixBookingDetail" />
+		<property name="blockSize"  value="10"/>
+		<property name="table"      value="IDS"/>
+		<property name="tableName"  value="BOOKING_DETAIL"/>
+	</bean>
+	<bean name="mixPrefixBookingDetail" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+		<property name="prefix"   value="BDTL-" />
+		<property name="cipers"   value="5" />
+		<property name="fillChar" value="0" />
+	</bean>
+
+</beans>

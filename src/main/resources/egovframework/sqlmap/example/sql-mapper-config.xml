@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+		<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+		<typeAlias alias="searchVO" type="egovframework.example.sample.service.SampleDefaultVO"/>
+		<typeAlias alias="sampleVO" type="egovframework.example.sample.service.SampleVO"/>
+		<typeAlias alias="commonDefaultVO" type="egovframework.example.cmmn.service.CommonDefaultVO"/>
+		<typeAlias alias="venueVO" type="egovframework.example.venue.service.VenueVO"/>
+		<typeAlias alias="memberVO" type="egovframework.example.member.service.MemberVO"/>
+		<typeAlias alias="seatVO" type="egovframework.example.seat.service.SeatVO"/>
+		<typeAlias alias="programVO" type="egovframework.example.program.service.ProgramVO"/>
+		<typeAlias alias="ticketPriceVO" type="egovframework.example.price.service.TicketPriceVO"/>
+		<typeAlias alias="scheduleVO" type="egovframework.example.schedule.service.ScheduleVO"/>
+		<typeAlias alias="bookingVO" type="egovframework.example.booking.service.BookingVO"/>
+		<typeAlias alias="bookingDetailVO" type="egovframework.example.booking.service.BookingDetailVO"/>
+    </typeAliases>
+</configuration>

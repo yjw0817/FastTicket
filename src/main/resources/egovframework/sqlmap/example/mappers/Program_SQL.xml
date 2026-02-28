@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.program.service.impl.ProgramMapper">
+
+	<insert id="insertProgram" parameterType="programVO">
+		INSERT INTO PROGRAM
+			( PROGRAM_ID
+			, PROGRAM_NM
+			, PROGRAM_TYPE
+			, VENUE_ID
+			, DESCRIPTION
+			, AGE_LIMIT
+			, RUNNING_TIME
+			, POSTER_IMG
+			, START_DATE
+			, END_DATE
+			, USE_YN
+			, REG_USER
+			, REG_DT )
+		VALUES
+			( #{programId}
+			, #{programNm}
+			, #{programType}
+			, #{venueId}
+			, #{description}
+			, #{ageLimit}
+			, #{runningTime}
+			, #{posterImg}
+			, #{startDate}
+			, #{endDate}
+			, #{useYn}
+			, #{regUser}
+			, NOW() )
+	</insert>
+
+	<update id="updateProgram" parameterType="programVO">
+		UPDATE PROGRAM
+		SET PROGRAM_NM   = #{programNm}
+		  , PROGRAM_TYPE = #{programType}
+		  , VENUE_ID     = #{venueId}
+		  , DESCRIPTION  = #{description}
+		  , AGE_LIMIT    = #{ageLimit}
+		  , RUNNING_TIME = #{runningTime}
+		  , POSTER_IMG   = #{posterImg}
+		  , START_DATE   = #{startDate}
+		  , END_DATE     = #{endDate}
+		  , USE_YN       = #{useYn}
+		  , REG_USER     = #{regUser}
+		WHERE PROGRAM_ID = #{programId}
+	</update>
+
+	<delete id="deleteProgram" parameterType="programVO">
+		DELETE FROM PROGRAM
+		WHERE PROGRAM_ID = #{programId}
+	</delete>
+
+	<select id="selectProgram" parameterType="programVO" resultType="programVO">
+		SELECT
+			P.PROGRAM_ID
+		  , P.PROGRAM_NM
+		  , P.PROGRAM_TYPE
+		  , P.VENUE_ID
+		  , P.DESCRIPTION
+		  , P.AGE_LIMIT
+		  , P.RUNNING_TIME
+		  , P.POSTER_IMG
+		  , DATE_FORMAT(P.START_DATE, '%Y-%m-%d') AS startDate
+		  , DATE_FORMAT(P.END_DATE, '%Y-%m-%d') AS endDate
+		  , P.USE_YN
+		  , P.REG_USER
+		  , DATE_FORMAT(P.REG_DT, '%Y-%m-%d %H:%i:%s') AS regDt
+		  , V.VENUE_NM AS venueNm
+		FROM PROGRAM P
+		LEFT JOIN VENUE V ON P.VENUE_ID = V.VENUE_ID
+		WHERE P.PROGRAM_ID = #{programId}
+	</select>
+
+	<select id="selectProgramList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			P.PROGRAM_ID
+		  , P.PROGRAM_NM
+		  , P.PROGRAM_TYPE
+		  , P.VENUE_ID
+		  , P.USE_YN
+		  , DATE_FORMAT(P.START_DATE, '%Y-%m-%d') AS START_DATE
+		  , DATE_FORMAT(P.END_DATE, '%Y-%m-%d') AS END_DATE
+		  , V.VENUE_NM
+		FROM PROGRAM P
+		LEFT JOIN VENUE V ON P.VENUE_ID = V.VENUE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND P.PROGRAM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND P.PROGRAM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY P.PROGRAM_ID ASC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<select id="selectProgramListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*)
+		FROM PROGRAM P
+		LEFT JOIN VENUE V ON P.VENUE_ID = V.VENUE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND P.PROGRAM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND P.PROGRAM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectProgramListAll" resultType="egovMap">
+		SELECT
+			PROGRAM_ID
+		  , PROGRAM_NM
+		  , VENUE_ID
+		FROM PROGRAM
+		WHERE USE_YN = 'Y'
+		ORDER BY PROGRAM_NM ASC
+	</select>
+
+</mapper>

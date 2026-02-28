@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.schedule.service.impl.ScheduleMapper">
+
+	<resultMap id="schedule" type="egovframework.example.schedule.service.ScheduleVO">
+		<result property="scheduleId"  column="SCHEDULE_ID"/>
+		<result property="programId"   column="PROGRAM_ID"/>
+		<result property="eventDate"   column="EVENT_DATE"/>
+		<result property="eventTime"   column="EVENT_TIME"/>
+		<result property="totalSeats"  column="TOTAL_SEATS"/>
+		<result property="availSeats"  column="AVAIL_SEATS"/>
+		<result property="status"      column="STATUS"/>
+		<result property="regDt"       column="REG_DT"/>
+		<result property="programNm"   column="PROGRAM_NM"/>
+	</resultMap>
+
+	<insert id="insertSchedule" parameterType="scheduleVO">
+		INSERT INTO SCHEDULE
+			( SCHEDULE_ID
+			, PROGRAM_ID
+			, EVENT_DATE
+			, EVENT_TIME
+			, TOTAL_SEATS
+			, AVAIL_SEATS
+			, STATUS
+			, REG_DT )
+		VALUES
+			( #{scheduleId}
+			, #{programId}
+			, #{eventDate}
+			, #{eventTime}
+			, #{totalSeats}
+			, #{availSeats}
+			, #{status}
+			, NOW() )
+	</insert>
+
+	<update id="updateSchedule" parameterType="scheduleVO">
+		UPDATE SCHEDULE
+		SET PROGRAM_ID  = #{programId}
+		  , EVENT_DATE  = #{eventDate}
+		  , EVENT_TIME  = #{eventTime}
+		  , TOTAL_SEATS = #{totalSeats}
+		  , AVAIL_SEATS = #{availSeats}
+		  , STATUS      = #{status}
+		WHERE SCHEDULE_ID = #{scheduleId}
+	</update>
+
+	<delete id="deleteSchedule" parameterType="scheduleVO">
+		DELETE FROM SCHEDULE
+		WHERE SCHEDULE_ID = #{scheduleId}
+	</delete>
+
+	<select id="selectSchedule" parameterType="scheduleVO" resultMap="schedule">
+		SELECT
+			S.SCHEDULE_ID
+			, S.PROGRAM_ID
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, S.TOTAL_SEATS
+			, S.AVAIL_SEATS
+			, S.STATUS
+			, S.REG_DT
+			, P.PROGRAM_NM
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE S.SCHEDULE_ID = #{scheduleId}
+	</select>
+
+	<select id="selectScheduleList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			S.SCHEDULE_ID
+			, S.PROGRAM_ID
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, S.TOTAL_SEATS
+			, S.AVAIL_SEATS
+			, S.STATUS
+			, S.REG_DT
+			, P.PROGRAM_NM
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND S.SCHEDULE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND S.STATUS = #{searchKeyword}
+				</when>
+			</choose>
+		</if>
+		ORDER BY S.SCHEDULE_ID ASC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<select id="selectScheduleListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND S.SCHEDULE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND S.STATUS = #{searchKeyword}
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectScheduleListByProgram" parameterType="scheduleVO" resultType="egovMap">
+		SELECT
+			S.SCHEDULE_ID
+			, S.PROGRAM_ID
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, S.TOTAL_SEATS
+			, S.AVAIL_SEATS
+			, S.STATUS
+			, S.REG_DT
+			, P.PROGRAM_NM
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE S.PROGRAM_ID = #{programId}
+		AND S.STATUS = 'OPEN'
+		ORDER BY S.EVENT_DATE ASC, S.EVENT_TIME ASC
+	</select>
+
+</mapper>

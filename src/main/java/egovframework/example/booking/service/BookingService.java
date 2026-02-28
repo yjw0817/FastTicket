@@ -1,0 +1,58 @@
+package egovframework.example.booking.service;
+
+import java.util.List;
+
+import egovframework.example.cmmn.service.CommonDefaultVO;
+
+/**
+ * @Class Name : BookingService.java
+ * @Description : 예매 서비스 인터페이스
+ */
+public interface BookingService {
+
+	/**
+	 * 예매를 등록한다. (예매상세 포함 일괄 저장)
+	 * @param vo - 등록할 정보가 담긴 BookingVO (bookingDetails 포함)
+	 * @return 등록된 예매ID
+	 * @exception Exception
+	 */
+	String insertBooking(BookingVO vo) throws Exception;
+
+	/**
+	 * 예매를 수정한다. (상태 변경)
+	 * @param vo - 수정할 정보가 담긴 BookingVO
+	 * @exception Exception
+	 */
+	void updateBooking(BookingVO vo) throws Exception;
+
+	/**
+	 * 예매를 삭제한다. (예매상세 먼저 삭제 후 예매 삭제)
+	 * @param vo - 삭제할 정보가 담긴 BookingVO
+	 * @exception Exception
+	 */
+	void deleteBooking(BookingVO vo) throws Exception;
+
+	/**
+	 * 예매를 조회한다. (예매상세 목록 포함)
+	 * @param vo - 조회할 정보가 담긴 BookingVO
+	 * @return 조회한 예매 (bookingDetails 포함)
+	 * @exception Exception
+	 */
+	BookingVO selectBooking(BookingVO vo) throws Exception;
+
+	/**
+	 * 예매 목록을 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 VO
+	 * @return 예매 목록
+	 * @exception Exception
+	 */
+	List<?> selectBookingList(CommonDefaultVO searchVO) throws Exception;
+
+	/**
+	 * 예매 총 갯수를 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 VO
+	 * @return 예매 총 갯수
+	 */
+	int selectBookingListTotCnt(CommonDefaultVO searchVO);
+
+}
