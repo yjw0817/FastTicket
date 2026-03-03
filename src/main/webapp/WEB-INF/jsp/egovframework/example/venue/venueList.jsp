@@ -97,19 +97,19 @@
                     <c:forEach var="result" items="${resultList}" varStatus="status">
                         <tr>
                             <td align="center" class="listtd"><c:out value="${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}"/></td>
-                            <td align="center" class="listtd"><a href="javascript:fn_egov_select('<c:out value="${result.venue_id}"/>')"><c:out value="${result.venue_id}"/></a></td>
-                            <td align="left"   class="listtd"><c:out value="${result.venue_nm}"/>&nbsp;</td>
+                            <td align="center" class="listtd"><a href="javascript:fn_egov_select('<c:out value="${result.VENUE_ID}"/>')"><c:out value="${result.VENUE_ID}"/></a></td>
+                            <td align="left"   class="listtd"><c:out value="${result.VENUE_NM}"/>&nbsp;</td>
                             <td align="center" class="listtd">
                                 <c:choose>
-                                    <c:when test="${result.seat_type == 'F'}">자유석</c:when>
-                                    <c:when test="${result.seat_type == 'A'}">지정석</c:when>
-                                    <c:otherwise><c:out value="${result.seat_type}"/></c:otherwise>
+                                    <c:when test="${result.SEAT_TYPE == 'F'}">자유석</c:when>
+                                    <c:when test="${result.SEAT_TYPE == 'A'}">지정석</c:when>
+                                    <c:otherwise><c:out value="${result.SEAT_TYPE}"/></c:otherwise>
                                 </c:choose>
                             </td>
-                            <td align="center" class="listtd"><c:out value="${result.total_seats}"/>&nbsp;</td>
+                            <td align="center" class="listtd"><c:out value="${result.TOTAL_SEATS}"/>&nbsp;</td>
                             <td align="center" class="listtd">
                                 <c:choose>
-                                    <c:when test="${result.use_yn == 'Y'}"><span class="badge-active">Y</span></c:when>
+                                    <c:when test="${result.USE_YN == 'Y'}"><span class="badge-active">Y</span></c:when>
                                     <c:otherwise><span class="badge-inactive">N</span></c:otherwise>
                                 </c:choose>
                             </td>

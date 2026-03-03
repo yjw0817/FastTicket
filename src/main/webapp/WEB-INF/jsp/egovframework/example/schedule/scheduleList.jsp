@@ -98,10 +98,10 @@
                             <td align="right" class="listtd"><c:out value="${result.AVAIL_SEATS}"/>&nbsp;</td>
                             <td align="center" class="listtd">
                                 <c:choose>
-                                    <c:when test="${result.STATUS == 'OPEN'}"><span class="badge-active">오픈</span></c:when>
+                                    <c:when test="${result.STATUS == 'OPEN'}"><span class="badge-active">판매중</span></c:when>
                                     <c:when test="${result.STATUS == 'CLOSED'}"><span class="badge-inactive">마감</span></c:when>
                                     <c:when test="${result.STATUS == 'CANCELED'}"><span class="badge-cancel">취소</span></c:when>
-                                    <c:otherwise><span class="badge-info"><c:out value="${result.STATUS}"/></span></c:otherwise>
+                                    <c:otherwise><span class="badge-info">${not empty result.STATUS ? result.STATUS : '-'}</span></c:otherwise>
                                 </c:choose>
                             </td>
                         </tr>

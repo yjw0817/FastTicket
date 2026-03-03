@@ -175,6 +175,7 @@ table { border-collapse: collapse; }
     height: var(--bar-h);
     background: var(--card);
     border-bottom: 1px solid var(--line);
+    box-shadow: -1px 0 0 var(--line);
     display: flex;
     align-items: center;
     padding: 0 24px;
@@ -323,6 +324,18 @@ table { border-collapse: collapse; }
     font-size: 13px;
     height: 34px;
     line-height: 1;
+    white-space: nowrap;
+}
+/* Search button (last in search controls) → always outline style */
+#search .ms-auto .btn:last-child {
+    background: var(--card) !important;
+    border-color: var(--input-line) !important;
+    color: var(--ink-2) !important;
+}
+#search .ms-auto .btn:last-child:hover {
+    background: var(--card-dim) !important;
+    border-color: #adb5bd !important;
+    color: var(--ink) !important;
 }
 
 
@@ -414,6 +427,11 @@ td {
     background-color: transparent;
 }
 /* Table links */
+/* Force consistent text color (override eGovFrame inline styles) */
+#table td.listtd,
+#table td {
+    color: var(--ink-2) !important;
+}
 #table td a {
     color: var(--blue) !important;
     font-weight: 600;
