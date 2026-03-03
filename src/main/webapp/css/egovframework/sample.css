@@ -465,6 +465,11 @@ td {
     color: var(--blue-hover);
     text-decoration: underline;
 }
+#table td a.btn-primary,
+#table td a.btn-primary:visited,
+#table td a.btn-primary:hover {
+    color: #fff !important;
+}
 
 
 /* ================================================================
