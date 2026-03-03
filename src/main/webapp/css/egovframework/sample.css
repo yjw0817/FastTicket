@@ -66,6 +66,8 @@ body {
 a { color: var(--blue); text-decoration: none; transition: color .12s; }
 a:hover { color: var(--blue-hover); }
 a:visited { color: var(--blue); }
+a.btn { color: inherit; }
+a.btn-primary, a.btn-primary:visited, a.btn-primary:hover { color: #fff !important; }
 img { border: 0; vertical-align: middle; }
 table { border-collapse: collapse; }
 
