@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (pg) {
         var n = 0;
         pg.querySelectorAll('a').forEach(function(a) { if (/^\d+$/.test(a.textContent.trim())) n++; });
+        pg.querySelectorAll('strong').forEach(function(s) { if (/^\d+$/.test(s.textContent.trim())) n++; });
         if (n <= 1) {
             pg.classList.add('single-page');
         } else if (tb) {
