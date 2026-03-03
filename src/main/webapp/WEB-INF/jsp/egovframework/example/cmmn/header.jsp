@@ -54,7 +54,7 @@
                     회원
                 </a>
             </li>
-            <li class="${fn:contains(uri, 'Sample') || fn:contains(uri, 'sample') ? 'active' : ''}">
+            <li class="d-none ${fn:contains(uri, 'Sample') || fn:contains(uri, 'sample') ? 'active' : ''}">
                 <a href="<c:url value='/egovSampleList.do'/>">
                     <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                     Sample
@@ -72,6 +72,10 @@
         </svg>
     </button>
     <h1 id="topbar-title"></h1>
+    <div class="topbar-right">
+        <span class="topbar-admin">관리자</span>
+        <div class="topbar-avatar">A</div>
+    </div>
 </div>
 
 <script>

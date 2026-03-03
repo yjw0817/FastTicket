@@ -61,20 +61,15 @@
             </div>
             <!-- 검색 -->
             <div id="search">
-                <div class="row g-2 align-items-center justify-content-end mb-3">
-                    <div class="col-auto">
-                        <label for="searchCondition" class="visually-hidden">검색조건</label>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록</a>
+                    <div class="d-flex align-items-center gap-2 ms-auto">
                         <form:select path="searchCondition" cssClass="form-select form-select-sm">
                             <form:option value="1" label="예매자명" />
                             <form:option value="0" label="예매ID" />
                         </form:select>
-                    </div>
-                    <div class="col-auto">
-                        <label for="searchKeyword" class="visually-hidden">검색어</label>
                         <form:input path="searchKeyword" cssClass="form-control form-control-sm"/>
-                    </div>
-                    <div class="col-auto">
-                        <a class="btn btn-primary btn-sm" href="javascript:fn_egov_selectList();">검색</a>
+                        <a class="btn btn-outline-secondary btn-sm" href="javascript:fn_egov_selectList();">검색</a>
                     </div>
                 </div>
             </div>
@@ -140,26 +135,30 @@
                             </td>
                             <td align="center" class="listtd">
                                 <c:choose>
-                                    <c:when test="${result.booking_status == 'RESERVED'}">예매완료</c:when>
-                                    <c:when test="${result.booking_status == 'CANCELED'}">취소</c:when>
-                                    <c:when test="${result.booking_status == 'COMPLETED'}">완료</c:when>
-                                    <c:otherwise><c:out value="${result.booking_status}"/></c:otherwise>
+                                    <c:when test="${result.booking_status == 'RESERVED'}"><span class="badge-info">예매완료</span></c:when>
+                                    <c:when test="${result.booking_status == 'CANCELED'}"><span class="badge-cancel">취소</span></c:when>
+                                    <c:when test="${result.booking_status == 'COMPLETED'}"><span class="badge-active">완료</span></c:when>
+                                    <c:otherwise><span class="badge-inactive"><c:out value="${result.booking_status}"/></span></c:otherwise>
                                 </c:choose>
                             </td>
                             <td align="center" class="listtd">
                                 <c:choose>
-                                    <c:when test="${result.payment_status == 'PENDING'}">미결제</c:when>
-                                    <c:when test="${result.payment_status == 'PAID'}">결제완료</c:when>
-                                    <c:when test="${result.payment_status == 'REFUNDED'}">환불</c:when>
-                                    <c:otherwise><c:out value="${result.payment_status}"/></c:otherwise>
+                                    <c:when test="${result.payment_status == 'PENDING'}"><span class="badge-pending">미결제</span></c:when>
+                                    <c:when test="${result.payment_status == 'PAID'}"><span class="badge-active">결제완료</span></c:when>
+                                    <c:when test="${result.payment_status == 'REFUNDED'}"><span class="badge-inactive">환불</span></c:when>
+                                    <c:otherwise><span class="badge-inactive"><c:out value="${result.payment_status}"/></span></c:otherwise>
                                 </c:choose>
                             </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty resultList}">
-                        <tr>
-                            <td colspan="10" align="center" class="listtd">조회된 예매 내역이 없습니다.</td>
-                        </tr>
+                        <tr><td colspan="10" class="listtd">
+                            <div class="empty-state">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <p>조회된 예매 내역이 없습니다.</p>
+                                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록하기</a>
+                            </div>
+                        </td></tr>
                     </c:if>
                 </table>
             </div>
@@ -169,9 +168,7 @@
                 <form:hidden path="pageIndex" />
             </div>
             <!-- 버튼 -->
-            <div id="sysbtn">
-                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록</a>
-            </div>
+            <div id="sysbtn"></div>
         </div>
     </form:form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

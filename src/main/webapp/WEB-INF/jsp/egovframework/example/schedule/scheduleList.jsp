@@ -51,20 +51,15 @@
             </div>
             <!-- // 타이틀 -->
             <div id="search">
-                <div class="row g-2 align-items-center justify-content-end mb-3">
-                    <div class="col-auto">
-                        <label for="searchCondition" class="visually-hidden">검색조건</label>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록</a>
+                    <div class="d-flex align-items-center gap-2 ms-auto">
                         <form:select path="searchCondition" cssClass="form-select form-select-sm">
                             <form:option value="0" label="일정ID" />
                             <form:option value="1" label="상태" />
                         </form:select>
-                    </div>
-                    <div class="col-auto">
-                        <label for="searchKeyword" class="visually-hidden">검색어</label>
                         <form:input path="searchKeyword" cssClass="form-control form-control-sm"/>
-                    </div>
-                    <div class="col-auto">
-                        <a class="btn btn-primary btn-sm" href="javascript:fn_egov_selectList();">검색</a>
+                        <a class="btn btn-outline-secondary btn-sm" href="javascript:fn_egov_selectList();">검색</a>
                     </div>
                 </div>
             </div>
@@ -101,9 +96,25 @@
                             <td align="center" class="listtd"><c:out value="${result.EVENT_TIME}"/>&nbsp;</td>
                             <td align="right" class="listtd"><c:out value="${result.TOTAL_SEATS}"/>&nbsp;</td>
                             <td align="right" class="listtd"><c:out value="${result.AVAIL_SEATS}"/>&nbsp;</td>
-                            <td align="center" class="listtd"><c:out value="${result.STATUS}"/>&nbsp;</td>
+                            <td align="center" class="listtd">
+                                <c:choose>
+                                    <c:when test="${result.STATUS == 'OPEN'}"><span class="badge-active">오픈</span></c:when>
+                                    <c:when test="${result.STATUS == 'CLOSED'}"><span class="badge-inactive">마감</span></c:when>
+                                    <c:when test="${result.STATUS == 'CANCELED'}"><span class="badge-cancel">취소</span></c:when>
+                                    <c:otherwise><span class="badge-info"><c:out value="${result.STATUS}"/></span></c:otherwise>
+                                </c:choose>
+                            </td>
                         </tr>
                     </c:forEach>
+                    <c:if test="${empty resultList}">
+                        <tr><td colspan="8" class="listtd">
+                            <div class="empty-state">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <p>등록된 공연일정이 없습니다.</p>
+                                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록하기</a>
+                            </div>
+                        </td></tr>
+                    </c:if>
                 </table>
             </div>
             <!-- /List -->
@@ -111,9 +122,7 @@
                 <ui:pagination paginationInfo="${paginationInfo}" type="image" jsFunction="fn_egov_link_page" />
                 <form:hidden path="pageIndex" />
             </div>
-            <div id="sysbtn">
-                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록</a>
-            </div>
+            <div id="sysbtn"></div>
         </div>
     </form:form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

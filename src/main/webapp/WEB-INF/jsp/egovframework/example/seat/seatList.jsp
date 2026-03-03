@@ -50,20 +50,15 @@
             </div>
             <!-- // 타이틀 -->
             <div id="search">
-                <div class="row g-2 align-items-center justify-content-end mb-3">
-                    <div class="col-auto">
-                        <label for="searchCondition" class="visually-hidden">검색조건</label>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록</a>
+                    <div class="d-flex align-items-center gap-2 ms-auto">
                         <form:select path="searchCondition" cssClass="form-select form-select-sm">
                             <form:option value="1" label="열(Row)" />
                             <form:option value="0" label="좌석ID" />
                         </form:select>
-                    </div>
-                    <div class="col-auto">
-                        <label for="searchKeyword" class="visually-hidden">검색어</label>
                         <form:input path="searchKeyword" cssClass="form-control form-control-sm"/>
-                    </div>
-                    <div class="col-auto">
-                        <a class="btn btn-primary btn-sm" href="javascript:fn_egov_selectList();">검색</a>
+                        <a class="btn btn-outline-secondary btn-sm" href="javascript:fn_egov_selectList();">검색</a>
                     </div>
                 </div>
             </div>
@@ -97,9 +92,23 @@
                             <td align="center" class="listtd"><c:out value="${result.seatRow}"/>&nbsp;</td>
                             <td align="center" class="listtd"><c:out value="${result.seatNo}"/>&nbsp;</td>
                             <td align="center" class="listtd"><c:out value="${result.seatGrade}"/>&nbsp;</td>
-                            <td align="center" class="listtd"><c:out value="${result.useYn}"/>&nbsp;</td>
+                            <td align="center" class="listtd">
+                                <c:choose>
+                                    <c:when test="${result.useYn == 'Y'}"><span class="badge-active">Y</span></c:when>
+                                    <c:otherwise><span class="badge-inactive">N</span></c:otherwise>
+                                </c:choose>
+                            </td>
                         </tr>
                     </c:forEach>
+                    <c:if test="${empty resultList}">
+                        <tr><td colspan="7" class="listtd">
+                            <div class="empty-state">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="12" y1="2" x2="12" y2="10"/></svg>
+                                <p>등록된 좌석이 없습니다.</p>
+                                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록하기</a>
+                            </div>
+                        </td></tr>
+                    </c:if>
                 </table>
             </div>
             <!-- /List -->
@@ -107,9 +116,7 @@
                 <ui:pagination paginationInfo="${paginationInfo}" type="image" jsFunction="fn_egov_link_page" />
                 <form:hidden path="pageIndex" />
             </div>
-            <div id="sysbtn">
-                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록</a>
-            </div>
+            <div id="sysbtn"></div>
         </div>
     </form:form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

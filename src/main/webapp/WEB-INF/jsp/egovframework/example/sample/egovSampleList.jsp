@@ -72,19 +72,15 @@
         	</div>
         	<!-- // 타이틀 -->
         	<div id="search">
-        		<div class="row g-2 align-items-center justify-content-end mb-3">
-        			<div class="col-auto">
-        			    <label for="searchCondition" class="visually-hidden"><spring:message code="search.choose" /></label>
+        		<div class="d-flex flex-wrap align-items-center gap-2">
+        		    <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();"><spring:message code="button.create" /></a>
+        		    <div class="d-flex align-items-center gap-2 ms-auto">
         				<form:select path="searchCondition" cssClass="form-select form-select-sm">
         					<form:option value="1" label="Name" />
         					<form:option value="0" label="ID" />
         				</form:select>
-        			</div>
-        			<div class="col-auto"><label for="searchKeyword" class="visually-hidden"><spring:message code="search.keyword" /></label>
                         <form:input path="searchKeyword" cssClass="form-control form-control-sm"/>
-                    </div>
-        			<div class="col-auto">
-        	            <a class="btn btn-primary btn-sm" href="javascript:fn_egov_selectList();"><spring:message code="button.search" /></a>
+        	            <a class="btn btn-outline-secondary btn-sm" href="javascript:fn_egov_selectList();"><spring:message code="button.search" /></a>
         	        </div>
                 </div>
         	</div>
@@ -113,11 +109,25 @@
             				<td align="center" class="listtd"><c:out value="${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}"/></td>
             				<td align="center" class="listtd"><a href="javascript:fn_egov_select('<c:out value="${result.id}"/>')"><c:out value="${result.id}"/></a></td>
             				<td align="left" class="listtd"><c:out value="${result.name}"/>&nbsp;</td>
-            				<td align="center" class="listtd"><c:out value="${result.useYn}"/>&nbsp;</td>
+            				<td align="center" class="listtd">
+            				    <c:choose>
+            				        <c:when test="${result.useYn == 'Y'}"><span class="badge-active">Y</span></c:when>
+            				        <c:otherwise><span class="badge-inactive">N</span></c:otherwise>
+            				    </c:choose>
+            				</td>
             				<td align="center" class="listtd"><c:out value="${result.description}"/>&nbsp;</td>
             				<td align="center" class="listtd"><c:out value="${result.regUser}"/>&nbsp;</td>
             			</tr>
         			</c:forEach>
+        			<c:if test="${empty resultList}">
+        			    <tr><td colspan="6" class="listtd">
+        			        <div class="empty-state">
+        			            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        			            <p>등록된 샘플이 없습니다.</p>
+        			            <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록하기</a>
+        			        </div>
+        			    </td></tr>
+        			</c:if>
         		</table>
         	</div>
         	<!-- /List -->
@@ -125,9 +135,7 @@
         		<ui:pagination paginationInfo = "${paginationInfo}" type="image" jsFunction="fn_egov_link_page" />
         		<form:hidden path="pageIndex" />
         	</div>
-        	<div id="sysbtn">
-        	    <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();"><spring:message code="button.create" /></a>
-        	</div>
+        	<div id="sysbtn"></div>
         </div>
     </form:form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
