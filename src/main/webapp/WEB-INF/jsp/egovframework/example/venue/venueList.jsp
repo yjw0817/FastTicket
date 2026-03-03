@@ -13,8 +13,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>공연장 관리</title>
-    <link type="text/css" rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>?v=2"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>?v=4"/>
     <script type="text/javaScript" language="javascript" defer="defer">
         <!--
         /* 공연장 수정 화면 function */
@@ -60,29 +62,26 @@
             </div>
             <!-- // 타이틀 -->
             <div id="search">
-                <ul>
-                    <li>
-                        <label for="searchCondition" style="visibility:hidden;">검색조건</label>
-                        <form:select path="searchCondition" cssClass="use">
+                <div class="row g-2 align-items-center justify-content-end mb-3">
+                    <div class="col-auto">
+                        <label for="searchCondition" class="visually-hidden">검색조건</label>
+                        <form:select path="searchCondition" cssClass="form-select form-select-sm">
                             <form:option value="1" label="공연장명" />
                             <form:option value="0" label="공연장ID" />
                         </form:select>
-                    </li>
-                    <li>
-                        <label for="searchKeyword" style="visibility:hidden;display:none;">검색어</label>
-                        <form:input path="searchKeyword" cssClass="txt"/>
-                    </li>
-                    <li>
-                        <span class="btn_blue_l">
-                            <a href="javascript:fn_egov_selectList();">검색</a>
-                            <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                        </span>
-                    </li>
-                </ul>
+                    </div>
+                    <div class="col-auto">
+                        <label for="searchKeyword" class="visually-hidden">검색어</label>
+                        <form:input path="searchKeyword" cssClass="form-control form-control-sm"/>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-primary btn-sm" href="javascript:fn_egov_selectList();">검색</a>
+                    </div>
+                </div>
             </div>
             <!-- List -->
-            <div id="table">
-                <table width="100%" border="0" cellpadding="0" cellspacing="0" summary="공연장ID, 공연장명, 좌석유형, 총좌석수, 사용여부를 표시하는 테이블">
+            <div id="table" class="table-responsive">
+                <table class="table table-hover table-striped" summary="공연장ID, 공연장명, 좌석유형, 총좌석수, 사용여부를 표시하는 테이블">
                     <caption style="visibility:hidden">공연장ID, 공연장명, 좌석유형, 총좌석수, 사용여부를 표시하는 테이블</caption>
                     <colgroup>
                         <col width="40"/>
@@ -124,16 +123,10 @@
                 <form:hidden path="pageIndex" />
             </div>
             <div id="sysbtn">
-                <ul>
-                    <li>
-                        <span class="btn_blue_l">
-                            <a href="javascript:fn_egov_addView();">등록</a>
-                            <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                        </span>
-                    </li>
-                </ul>
+                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_addView();">등록</a>
             </div>
         </div>
     </form:form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

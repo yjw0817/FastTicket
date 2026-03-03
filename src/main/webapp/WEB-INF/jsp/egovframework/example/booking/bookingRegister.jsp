@@ -15,9 +15,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <c:set var="registerFlag" value="${empty bookingVO.bookingId ? 'create' : 'modify'}"/>
     <title>예매 <c:if test="${registerFlag == 'create'}">등록</c:if><c:if test="${registerFlag == 'modify'}">상세/수정</c:if></title>
-    <link type="text/css" rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>?v=2"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>?v=4"/>
     <style type="text/css">
         table.detail-table { width:100%; border-collapse:collapse; margin-top:10px; }
         table.detail-table th { background:#e8f0f8; border:1px solid #c2d0db; padding:5px 8px; text-align:center; }
@@ -147,7 +149,7 @@
             <div class="err-msg"><c:out value="${errorMessage}"/></div>
         </c:if>
 
-        <div id="table">
+        <div id="table" class="table-responsive">
 
             <%-- ===================================================== --%>
             <%-- CREATE 모드 --%>
@@ -156,8 +158,7 @@
 
                 <!-- 공연일정 선택 -->
                 <p class="section-title">1. 공연일정 선택</p>
-                <table width="100%" border="1" cellpadding="0" cellspacing="0"
-                       style="border-collapse:collapse; border-top:2px solid #C2D0DB;">
+                <table class="table" style="border-top:2px solid #C2D0DB; border-collapse:collapse;">
                     <colgroup>
                         <col width="150"/>
                         <col/>
@@ -265,8 +266,7 @@
 
                 <!-- 예매자 정보 입력 -->
                 <p class="section-title">3. 예매자 정보</p>
-                <table width="100%" border="1" cellpadding="0" cellspacing="0"
-                       style="border-collapse:collapse; border-top:2px solid #C2D0DB;">
+                <table class="table" style="border-top:2px solid #C2D0DB; border-collapse:collapse;">
                     <colgroup>
                         <col width="150"/>
                         <col/>
@@ -309,8 +309,7 @@
 
                 <!-- 예매 기본 정보 (읽기전용) -->
                 <p class="section-title">예매 정보</p>
-                <table width="100%" border="1" cellpadding="0" cellspacing="0"
-                       style="border-collapse:collapse; border-top:2px solid #C2D0DB;">
+                <table class="table" style="border-top:2px solid #C2D0DB; border-collapse:collapse;">
                     <colgroup>
                         <col width="150"/>
                         <col width="40%"/>
@@ -459,36 +458,14 @@
 
         <!-- 버튼 영역 -->
         <div id="sysbtn">
-            <ul>
-                <li>
-                    <span class="btn_blue_l">
-                        <a href="javascript:fn_egov_selectList();">목록</a>
-                        <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                    </span>
-                </li>
-                <c:if test="${registerFlag == 'create'}">
-                    <li>
-                        <span class="btn_blue_l">
-                            <a href="javascript:fn_egov_save();">등록</a>
-                            <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                        </span>
-                    </li>
-                </c:if>
-                <c:if test="${registerFlag == 'modify'}">
-                    <li>
-                        <span class="btn_blue_l">
-                            <a href="javascript:fn_egov_update();">저장</a>
-                            <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                        </span>
-                    </li>
-                    <li>
-                        <span class="btn_blue_l">
-                            <a href="javascript:fn_egov_delete();">삭제</a>
-                            <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                        </span>
-                    </li>
-                </c:if>
-            </ul>
+            <a class="btn btn-outline-secondary btn-sm" href="javascript:fn_egov_selectList();">목록</a>
+            <c:if test="${registerFlag == 'create'}">
+                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_save();">등록</a>
+            </c:if>
+            <c:if test="${registerFlag == 'modify'}">
+                <a class="btn btn-primary btn-sm" href="javascript:fn_egov_update();">저장</a>
+                <a class="btn btn-danger btn-sm" href="javascript:fn_egov_delete();">삭제</a>
+            </c:if>
         </div>
 
         <!-- 검색조건 유지 -->
@@ -507,5 +484,6 @@
     </div><%-- END #content_pop --%>
 
 </form:form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

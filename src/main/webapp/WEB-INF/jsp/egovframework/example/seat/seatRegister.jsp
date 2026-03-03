@@ -6,9 +6,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <c:set var="registerFlag" value="${empty seatVO.seatId ? 'create' : 'modify'}"/>
     <title>좌석 <c:if test="${registerFlag == 'create'}">등록</c:if><c:if test="${registerFlag == 'modify'}">수정</c:if></title>
-    <link type="text/css" rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>?v=2"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>?v=4"/>
     <script type="text/javaScript" language="javascript" defer="defer">
         <!--
         function fn_egov_selectList() {
@@ -58,9 +60,8 @@
             </ul>
         </div>
         <!-- // 타이틀 -->
-        <div id="table">
-            <table width="100%" border="1" cellpadding="0" cellspacing="0"
-                style="bordercolor:#D3E2EC; bordercolordark:#FFFFFF; BORDER-TOP:#C2D0DB 2px solid; BORDER-LEFT:#ffffff 1px solid; BORDER-RIGHT:#ffffff 1px solid; BORDER-BOTTOM:#C2D0DB 1px solid; border-collapse: collapse;">
+        <div id="table" class="table-responsive">
+            <table class="table" style="border-top:2px solid #C2D0DB; border-collapse:collapse;">
                 <colgroup>
                     <col width="150"/>
                     <col width="?"/>
@@ -122,37 +123,15 @@
             </table>
         </div>
         <div id="sysbtn">
-            <ul>
-                <li>
-                    <span class="btn_blue_l">
-                        <a href="javascript:fn_egov_selectList();">목록</a>
-                        <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                    </span>
-                </li>
-                <li>
-                    <span class="btn_blue_l">
-                        <a href="javascript:fn_egov_save();">
-                            <c:if test="${registerFlag == 'create'}">등록</c:if>
-                            <c:if test="${registerFlag == 'modify'}">수정</c:if>
-                        </a>
-                        <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                    </span>
-                </li>
-                <c:if test="${registerFlag == 'modify'}">
-                    <li>
-                        <span class="btn_blue_l">
-                            <a href="javascript:fn_egov_delete();">삭제</a>
-                            <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                        </span>
-                    </li>
-                </c:if>
-                <li>
-                    <span class="btn_blue_l">
-                        <a href="javascript:document.detailForm.reset();">초기화</a>
-                        <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt=""/>
-                    </span>
-                </li>
-            </ul>
+            <a class="btn btn-outline-secondary btn-sm" href="javascript:fn_egov_selectList();">목록</a>
+            <a class="btn btn-primary btn-sm" href="javascript:fn_egov_save();">
+                <c:if test="${registerFlag == 'create'}">등록</c:if>
+                <c:if test="${registerFlag == 'modify'}">수정</c:if>
+            </a>
+            <c:if test="${registerFlag == 'modify'}">
+                <a class="btn btn-danger btn-sm" href="javascript:fn_egov_delete();">삭제</a>
+            </c:if>
+            <a class="btn btn-outline-secondary btn-sm" href="javascript:document.detailForm.reset();">초기화</a>
         </div>
     </div>
     <!-- 검색조건 유지 -->
@@ -160,5 +139,6 @@
     <input type="hidden" name="searchKeyword"   value="<c:out value='${searchVO.searchKeyword}'/>"/>
     <input type="hidden" name="pageIndex"       value="<c:out value='${searchVO.pageIndex}'/>"/>
 </form:form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

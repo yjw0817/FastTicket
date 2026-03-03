@@ -4,87 +4,73 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FastTicket is a Java web application built on **eGovFrame 3.10.0** (Korean government standard framework), using Spring MVC 4.3.25, iBATIS/MyBatis for data access, and JSP views. It packages as a WAR deployed to Tomcat 7.
+FastTicket is a Korean eGovernment Framework (eGovFrame 3.10.0) web application built on Spring MVC 4.3.25. It currently contains the eGovFrame sample CRUD application for managing "Sample" entities with HSQLDB as the embedded database.
 
 ## Build & Run Commands
 
 ```bash
-# Build (produces WAR in target/)
-mvn install
+# Build the WAR (tests are skipped by default in pom.xml)
+mvn clean package
 
 # Run with embedded Tomcat on port 80
 mvn tomcat7:run
 
-# Run tests (tests are skipped by default; override with -DskipTests=false)
+# Run tests (currently no test files exist, but the framework is set up)
 mvn test -DskipTests=false
-
-# Run a single test
-mvn test -DskipTests=false -Dtest=ClassName
-
-# Generate JavaDoc
-mvn javadoc:javadoc
-
-# PMD static analysis
-mvn pmd:pmd
 ```
+
+The application is accessed at `http://localhost/` and all request URLs use the `*.do` pattern (e.g., `/egovSampleList.do`).
 
 ## Architecture
 
-### 3-Tier MVC (Controller → Service → DAO)
+### Three-Tier Layered Structure
 
-All application code lives under `src/main/java/egovframework/example/`:
+```
+Controller (web) → Service (service) → DAO/Mapper (persistence) → MyBatis SQL XML
+```
 
-- **`sample/web/`** — Spring MVC controllers. All URL mappings use `*.do` suffix (e.g., `/egovSampleList.do`). Controller methods receive `@ModelAttribute` VOs and return JSP view names.
-- **`sample/service/`** — Service interfaces and VO classes. `SampleDefaultVO` carries pagination params; `SampleVO` extends it with domain fields (id, name, description, useYn, regUser).
-- **`sample/service/impl/`** — Service implementations (`@Service`) and data access. `SampleDAO` uses iBATIS (`EgovAbstractDAO`); `SampleMapper` is the MyBatis alternative. The service impl currently uses `SampleDAO`.
-- **`cmmn/`** — Common cross-cutting: exception handlers, custom `WebBindingInitializer`, pagination renderer.
+All source code lives under the `egovframework.example` package:
+
+- **`cmmn/`** — Common infrastructure: exception handlers, binding initializer, pagination renderer
+- **`sample/web/`** — Spring MVC controllers (`*Controller.java`)
+- **`sample/service/`** — Service interfaces and VOs (value objects)
+- **`sample/service/impl/`** — Service implementations, DAO classes, MyBatis mapper interfaces
 
 ### Spring Configuration (XML-based)
 
-All Spring context files are in `src/main/resources/egovframework/spring/context-*.xml`:
+Application context is split across multiple XML files in `src/main/resources/egovframework/spring/`:
 
 | File | Purpose |
 |------|---------|
-| `context-datasource.xml` | DataSource — embedded HSQLDB by default; commented configs for MySQL/Oracle |
-| `context-mapper.xml` | MyBatis SqlSessionFactory and mapper scanner |
-| `context-sqlMap.xml` | iBATIS SqlMapClient (the currently active persistence approach) |
-| `context-transaction.xml` | TX manager with AOP advice on `*Service` beans |
-| `context-common.xml` | Component scan for `@Service`/`@Repository`, message source, exception handling |
-| `context-idgen.xml` | `EgovIdGnrService` — generates `SAMPLE-XXXXX` format IDs |
-| `context-properties.xml` | `EgovPropertyService` — pagination settings (pageUnit=10, pageSize=10) |
+| `context-datasource.xml` | HSQLDB embedded datasource |
+| `context-mapper.xml` | MyBatis SqlSessionFactory and mapper scanning |
+| `context-transaction.xml` | Transaction management |
+| `context-idgen.xml` | ID generation (UUID strategy) |
+| `context-common.xml` | Message source, trace/exception handling |
+| `context-aspect.xml` | AOP configuration |
+| `context-properties.xml` | Pagination properties (pageUnit=10, pageSize=10) |
+| `context-validator.xml` | Bean validation |
 
-MVC config is separate: `src/main/webapp/WEB-INF/config/egovframework/springmvc/dispatcher-servlet.xml` — scans for `@Controller`, sets up view resolver (prefix: `/WEB-INF/jsp/egovframework/example/`, suffix: `.jsp`), locale interceptor, pagination manager, and exception mappings.
+The MVC dispatcher servlet config is at `src/main/webapp/WEB-INF/config/egovframework/springmvc/dispatcher-servlet.xml`.
 
-### Request Pipeline
+### Data Access
 
-```
-*.do request → CharacterEncodingFilter (UTF-8) → HTMLTagFilter (XSS)
-  → DispatcherServlet → @Controller → @Service → DAO/Mapper → HSQLDB
-  → JSP view (under WEB-INF/jsp/egovframework/example/)
-```
+- **ORM**: MyBatis with XML-based SQL mapping files in `src/main/resources/egovframework/sqlmap/example/`
+- **Database**: HSQLDB (embedded). MySQL and Oracle configs exist commented out in `pom.xml` and `context-datasource.xml`
+- **Schema**: Defined in `src/main/resources/db/sampledb.sql` — `SAMPLE` table (ID, NAME, DESCRIPTION, USE_YN, REG_USER) and `IDS` table for sequence generation
 
-### SQL Mappings
+### View Layer
 
-- **iBATIS** (active): `src/main/resources/egovframework/sqlmap/example/sample/EgovSample_Sample_SQL.xml`
-- **MyBatis** (alternative): `src/main/resources/egovframework/sqlmap/example/mappers/` + `sql-mapper-config.xml`
-
-### Database
-
-Default is embedded HSQLDB initialized from `src/main/resources/db/sampledb.sql` (SAMPLE table with 114 pre-loaded records). To switch to MySQL or Oracle, uncomment the appropriate dataSource bean in `context-datasource.xml` and corresponding dependencies in `pom.xml`.
-
-### Views
-
-JSP pages in `src/main/webapp/WEB-INF/jsp/egovframework/example/sample/`:
-- `egovSampleList.jsp` — paginated list with search
-- `egovSampleRegister.jsp` — create/edit form (shared for both)
-
-Static assets: `src/main/webapp/css/`, `images/`, `js/`
+- JSP pages located at `src/main/webapp/WEB-INF/jsp/egovframework/example/sample/`
+- View resolver prefix: `/WEB-INF/jsp/` with `.jsp` suffix
+- CSS at `src/main/webapp/css/egovframework/sample.css`
+- i18n message bundles at `src/main/resources/egovframework/message/` (Korean and English)
 
 ## Key Conventions
 
-- **URL pattern**: All controller mappings end with `.do`
-- **ID generation**: Auto-generated via `EgovIdGnrService` (format: `SAMPLE-00001`)
-- **Validation**: Server-side via `DefaultBeanValidator` + `validator.xml` rules
-- **Encoding**: UTF-8 throughout (compiler, filter, message bundles)
-- **Language**: Java 8, Korean comments in source code
-- **Persistence**: iBATIS is the active DAO layer; MyBatis mapper is configured but the service impl uses `SampleDAO` (iBATIS)
+- **Java version**: 1.8 (source and target)
+- **Encoding**: UTF-8 throughout (source files, web filter, JSP pages)
+- **Naming**: eGovFrame conventions — classes prefixed with `Egov`, SQL mapper XML files named `EgovSample_*_SQL.xml`
+- **URL pattern**: All requests routed through `*.do` (configured in `web.xml`)
+- **Component scanning**: `egovframework` package is scanned for `@Controller`, `@Service`, `@Repository`
+- **IDE**: Eclipse with Spring IDE tools (`.project`, `.classpath`, `.settings/` present)
