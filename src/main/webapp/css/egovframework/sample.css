@@ -59,7 +59,6 @@ body {
     line-height: 1.55;
     color: var(--ink);
     background: var(--page-bg);
-    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -264,7 +263,7 @@ table { border-collapse: collapse; }
 #content_pop, #content {
     max-width: 1060px;
     margin: 0 auto;
-    padding: 24px 28px;
+    padding: 24px 20px;
     background: transparent;
     min-height: auto;
     float: none;
@@ -320,11 +319,14 @@ table { border-collapse: collapse; }
 #search .btn {
     border-radius: var(--radius-sm);
     font-weight: 600;
-    padding: 5px 20px;
+    padding: 0 20px;
     font-size: 13px;
     height: 34px;
-    line-height: 1;
+    line-height: 34px;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 /* Search button (last in search controls) → always outline style */
 #search .ms-auto .btn:last-child {
@@ -384,9 +386,9 @@ th {
     font-size: 12px;
     letter-spacing: 0;
     text-transform: none;
-    text-align: center;
+    text-align: left;
     vertical-align: middle;
-    padding: 11px 16px;
+    padding: 10px 16px;
     border-top: none !important;
     border-left: none !important;
     border-right: none !important;
@@ -394,8 +396,14 @@ th {
     white-space: nowrap;
     height: auto;
 }
+/* No, 사용여부, 상태 등 짧은 컬럼은 center 유지 */
+#table th:first-child,
+#table th:last-child,
+#table th[align="center"] {
+    text-align: center;
+}
 td {
-    padding: 13px 16px;
+    padding: 10px 16px;
     vertical-align: middle;
     font-size: 13px;
     color: var(--ink-2);
@@ -403,7 +411,7 @@ td {
     border-left: none; border-right: none; border-top: none;
 }
 .listtd {
-    padding: 13px 16px;
+    padding: 10px 16px;
     color: var(--ink-2);
     border-bottom: 1px solid var(--line-light);
     border-left: none; border-right: none; border-top: none;
@@ -422,9 +430,22 @@ td {
     background: var(--blue-ghost) !important;
     color: var(--ink) !important;
 }
-/* Zebra off */
+/* Zebra: clean alternating rows */
 #table .table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: transparent;
+    background-color: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+}
+#table .table-striped > tbody > tr:nth-of-type(even) > * {
+    background-color: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+}
+#table table tbody tr:nth-of-type(even) td,
+#table table tbody tr:nth-of-type(even) .listtd {
+    background-color: var(--card-dim);
+}
+#table table tbody tr:nth-of-type(odd) td,
+#table table tbody tr:nth-of-type(odd) .listtd {
+    background-color: var(--card);
 }
 /* Table links */
 /* Force consistent text color (override eGovFrame inline styles) */
@@ -534,6 +555,7 @@ td {
 }
 #sysbtn1 ul { margin: 0; padding: 0; list-style: none; display: flex; gap: 8px; }
 #sysbtn1 li { list-style: none; margin: 0; padding: 0; float: left; display: inline; }
+#sysbtn:empty { padding: 0; margin: 0; }
 
 /* Bootstrap overrides */
 button {
@@ -545,6 +567,9 @@ button {
     white-space: nowrap;
 }
 .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-family: var(--font);
     font-weight: 500;
     font-size: 13px;
@@ -552,6 +577,7 @@ button {
     padding: 7px 16px;
     transition: all .12s;
     line-height: 1.35;
+    white-space: nowrap;
 }
 .btn-sm {
     padding: 6px 14px;
@@ -696,13 +722,17 @@ textarea:focus {
    BADGES
    ================================================================ */
 .badge-active, .badge-inactive, .badge-pending, .badge-cancel, .badge-info {
-    display: inline-block;
-    padding: 2px 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    padding: 3px 10px;
     font-size: 11.5px;
     font-weight: 600;
     border-radius: 10px;
     line-height: 1.5;
     white-space: nowrap;
+    text-align: center;
 }
 .badge-active {
     background: #e8f5e9;
@@ -812,8 +842,8 @@ input.qty-input { width: 60px; text-align: right; border-radius: var(--radius-sm
     #search .form-select,
     #search .form-control { width: 100%; }
 
-    th { padding: 9px 12px; font-size: 11px; }
-    td, .listtd { padding: 10px 12px; font-size: 12px; }
+    th { padding: 8px 12px; font-size: 11px; }
+    td, .listtd { padding: 8px 12px; font-size: 12px; }
 
     #paging { padding: 8px 12px; }
     #paging ul { flex-wrap: wrap; justify-content: center; }
