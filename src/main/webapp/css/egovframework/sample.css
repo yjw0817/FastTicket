@@ -469,6 +469,7 @@ td {
 #table td a.btn-primary:visited,
 #table td a.btn-primary:hover {
     color: #fff !important;
+    text-decoration: none !important;
 }
 
 
