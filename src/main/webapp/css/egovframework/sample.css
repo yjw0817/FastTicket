@@ -784,6 +784,9 @@ textarea:focus {
     height: auto;
     padding: 0;
 }
+.empty-state .btn-primary {
+    color: #fff !important;
+}
 
 
 /* ================================================================
