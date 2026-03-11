@@ -1,0 +1,80 @@
+/* ================================================================
+   MISC
+   ================================================================ */
+#idwrap { float: left; padding: 0; margin: 0; }
+#idwrap ul { float: left; padding: 0; margin: 0; list-style: none; }
+#idwrap li { list-style: none; float: left; margin: 0; padding-right: 6px; }
+
+#foot {
+    margin: 0; padding: 24px; text-align: center;
+    height: auto; clear: both; background: transparent;
+    font-size: 12px; color: var(--ink-4);
+}
+
+.top { vertical-align: top; }
+.check ul { margin: 0; padding: 0; float: left; list-style: none; }
+.check li { list-style: none; float: left; margin: 0; padding: 0 0 0 3px; }
+p { height: auto; margin: 0; padding: 5px 0 0; }
+
+/* Booking extras */
+.section-title {
+    font-weight: 700; font-size: 14px; color: var(--blue);
+    margin: 20px 0 8px; text-align: left; padding-left: 2px;
+}
+table.detail-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+table.detail-table th {
+    background: var(--card-dim); color: var(--ink-3);
+    border-bottom: 2px solid var(--line); padding: 11px 16px;
+    font-size: 12px; letter-spacing: 0; text-transform: none;
+}
+table.detail-table td {
+    border-bottom: 1px solid var(--line-light); padding: 10px 16px; font-size: 13px;
+}
+.price-row td { text-align: center; }
+input.qty-input { width: 60px; text-align: right; border-radius: var(--radius-sm); }
+.total-box { text-align: right; padding: 10px 16px; font-weight: 700; font-size: 14px; background: var(--card-dim); }
+.err-msg {
+    color: var(--red); font-size: 13px; padding: 8px 12px;
+    background: #fff5f5; border-radius: var(--radius-sm);
+    border: 1px solid #fed7d7; margin-bottom: 10px;
+}
+
+/* Legacy hidden */
+#header, #logo, #top, #sub, .login, .login_en, .right_area { display: none; }
+.error, .error_en {
+    position: relative; margin: 0; padding: 120px 0 0 80px; text-align: left;
+}
+
+
+/* ================================================================
+   MOBILE
+   ================================================================ */
+@media (max-width: 991.98px) {
+    #content_pop, #content {
+        padding: 16px 12px;
+        min-height: auto;
+    }
+    #search { margin-bottom: 10px; }
+    #search .row { justify-content: stretch !important; }
+    #search .col-auto { flex: 1 1 auto; }
+    #search .btn { width: 100%; }
+    #search .form-select,
+    #search .form-control { width: 100%; }
+
+    th { padding: 8px 12px; font-size: 11px; }
+    td, .listtd { padding: 8px 12px; font-size: 12px; }
+
+    #paging { padding: 8px 12px; }
+    #paging ul { flex-wrap: wrap; justify-content: center; }
+
+    #sysbtn {
+        justify-content: center;
+        padding: 14px 0 0;
+        flex-wrap: wrap;
+    }
+    #sysbtn .btn { flex: 1 1 auto; min-width: 72px; }
+    #sysbtn ul { justify-content: center; flex-wrap: wrap; }
+    #sysbtn1 { text-align: center; }
+    #sysbtn1 ul { justify-content: center; }
+    .tbtd_caption, .tbtd_caption_re { text-align: left; width: auto; }
+}

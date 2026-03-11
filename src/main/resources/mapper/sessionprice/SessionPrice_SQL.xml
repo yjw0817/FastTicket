@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.sessionprice.mapper.SessionPriceMapper">
+
+	<resultMap id="sessionPrice" type="sessionPriceVO">
+		<result property="spriceId"   column="SPRICE_ID"/>
+		<result property="scheduleId" column="SCHEDULE_ID"/>
+		<result property="typeId"     column="TYPE_ID"/>
+		<result property="price"      column="PRICE"/>
+		<result property="useYn"      column="USE_YN"/>
+		<result property="regDt"      column="REG_DT"/>
+		<result property="typeNm"     column="TYPE_NM"/>
+		<result property="programNm"  column="PROGRAM_NM"/>
+		<result property="eventDate"  column="EVENT_DATE"/>
+		<result property="eventTime"  column="EVENT_TIME"/>
+		<result property="sessionNo"  column="SESSION_NO"/>
+	</resultMap>
+
+	<insert id="insertSessionPrice" parameterType="sessionPriceVO">
+		INSERT INTO SESSION_PRICE
+			( SPRICE_ID
+			, SCHEDULE_ID
+			, TYPE_ID
+			, PRICE
+			, USE_YN
+			, REG_DT )
+		VALUES
+			( #{spriceId}
+			, #{scheduleId}
+			, #{typeId}
+			, #{price}
+			, #{useYn}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateSessionPrice" parameterType="sessionPriceVO">
+		UPDATE SESSION_PRICE
+		SET PRICE  = #{price}
+		  , USE_YN = #{useYn}
+		WHERE SPRICE_ID = #{spriceId}
+	</update>
+
+	<delete id="deleteSessionPrice" parameterType="sessionPriceVO">
+		DELETE FROM SESSION_PRICE
+		WHERE SPRICE_ID = #{spriceId}
+	</delete>
+
+	<select id="selectSessionPrice" parameterType="sessionPriceVO" resultMap="sessionPrice">
+		SELECT
+			SP.SPRICE_ID, SP.SCHEDULE_ID, SP.TYPE_ID, SP.PRICE, SP.USE_YN, SP.REG_DT,
+			TT.TYPE_NM,
+			P.PROGRAM_NM,
+			S.EVENT_DATE, S.EVENT_TIME, S.SESSION_NO
+		FROM SESSION_PRICE SP
+		INNER JOIN TICKET_TYPE TT ON SP.TYPE_ID = TT.TYPE_ID
+		INNER JOIN SCHEDULE S ON SP.SCHEDULE_ID = S.SCHEDULE_ID
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE SP.SPRICE_ID = #{spriceId}
+	</select>
+
+	<select id="selectSessionPriceList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			SP.SPRICE_ID, SP.SCHEDULE_ID, SP.TYPE_ID, SP.PRICE, SP.USE_YN, SP.REG_DT,
+			TT.TYPE_NM,
+			P.PROGRAM_NM,
+			S.EVENT_DATE, S.EVENT_TIME, S.SESSION_NO
+		FROM SESSION_PRICE SP
+		INNER JOIN TICKET_TYPE TT ON SP.TYPE_ID = TT.TYPE_ID
+		INNER JOIN SCHEDULE S ON SP.SCHEDULE_ID = S.SCHEDULE_ID
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND SP.SCHEDULE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND TT.TYPE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY S.EVENT_DATE ASC, S.SESSION_NO ASC, TT.SORT_ORDER ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectSessionPriceListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM SESSION_PRICE SP
+		INNER JOIN TICKET_TYPE TT ON SP.TYPE_ID = TT.TYPE_ID
+		INNER JOIN SCHEDULE S ON SP.SCHEDULE_ID = S.SCHEDULE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND SP.SCHEDULE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND TT.TYPE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectSessionPriceListBySchedule" parameterType="sessionPriceVO" resultType="egovMap">
+		SELECT
+			SP.SPRICE_ID, SP.SCHEDULE_ID, SP.TYPE_ID, SP.PRICE, SP.USE_YN, SP.REG_DT,
+			TT.TYPE_NM, TT.SORT_ORDER
+		FROM SESSION_PRICE SP
+		INNER JOIN TICKET_TYPE TT ON SP.TYPE_ID = TT.TYPE_ID
+		INNER JOIN SCHEDULE S ON SP.SCHEDULE_ID = S.SCHEDULE_ID
+		WHERE SP.SCHEDULE_ID = #{scheduleId}
+		AND SP.USE_YN = 'Y'
+		AND (NOT EXISTS (SELECT 1 FROM PROGRAM_TICKET_TYPE PTT WHERE PTT.PROGRAM_ID = S.PROGRAM_ID)
+		     OR SP.TYPE_ID IN (SELECT PTT.TYPE_ID FROM PROGRAM_TICKET_TYPE PTT WHERE PTT.PROGRAM_ID = S.PROGRAM_ID))
+		ORDER BY TT.SORT_ORDER ASC
+	</select>
+
+	<delete id="deleteSessionPriceBySchedule" parameterType="sessionPriceVO">
+		DELETE FROM SESSION_PRICE
+		WHERE SCHEDULE_ID = #{scheduleId}
+	</delete>
+
+</mapper>

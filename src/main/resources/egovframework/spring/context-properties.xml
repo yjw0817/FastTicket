@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean name="propertiesService" class="org.egovframe.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+	        <map>
+	        	<entry key="pageUnit" value="10"/>
+	        	<entry key="pageSize" value="10"/>
+	        </map>
+		</property>
+	</bean>
+
+	<!-- 암호화 키 프로퍼티 -->
+	<bean id="cryptoProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:egovframework/crypto.properties"/>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+
+	<!-- CryptoUtil Bean (AES 키 주입) -->
+	<bean id="cryptoUtil" class="com.ftk.common.util.CryptoUtil">
+		<constructor-arg value="${crypto.aes.key}"/>
+	</bean>
+
+</beans>	

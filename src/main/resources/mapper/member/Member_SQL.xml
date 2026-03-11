@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.member.mapper.MemberMapper">
+
+	<resultMap id="member" type="com.ftk.member.vo.MemberVO">
+		<result property="memberId"  column="MEMBER_ID"/>
+		<result property="memberNm"  column="MEMBER_NM"/>
+		<result property="password"  column="PASSWORD"/>
+		<result property="tel"       column="TEL"/>
+		<result property="telLast4"  column="TEL_LAST4"/>
+		<result property="email"     column="EMAIL"/>
+		<result property="useYn"     column="USE_YN"/>
+		<result property="regDt"     column="REG_DT"/>
+	</resultMap>
+
+	<insert id="insertMember" parameterType="memberVO">
+		INSERT INTO MEMBER
+			( MEMBER_ID
+			, MEMBER_NM
+			, PASSWORD
+			, TEL
+			, TEL_LAST4
+			, EMAIL
+			, USE_YN
+			, REG_DT )
+		VALUES
+			( #{memberId}
+			, #{memberNm}
+			, #{password}
+			, #{tel}
+			, #{telLast4}
+			, #{email}
+			, #{useYn}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateMember" parameterType="memberVO">
+		UPDATE MEMBER
+		SET MEMBER_NM = #{memberNm}
+		<if test="password != null and password != ''">
+		  , PASSWORD  = #{password}
+		</if>
+		  , TEL       = #{tel}
+		  , TEL_LAST4 = #{telLast4}
+		  , EMAIL     = #{email}
+		  , USE_YN    = #{useYn}
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<delete id="deleteMember" parameterType="memberVO">
+		DELETE FROM MEMBER
+		WHERE MEMBER_ID = #{memberId}
+	</delete>
+
+	<select id="selectMember" parameterType="memberVO" resultMap="member">
+		SELECT
+			MEMBER_ID, MEMBER_NM, PASSWORD, TEL, TEL_LAST4, EMAIL, USE_YN, REG_DT
+		FROM MEMBER
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<!-- 로그인: ID + 사용여부만 조회, 비밀번호는 서비스에서 BCrypt 비교 -->
+	<select id="selectMemberByLogin" parameterType="memberVO" resultMap="member">
+		SELECT MEMBER_ID, MEMBER_NM, PASSWORD, TEL, TEL_LAST4, EMAIL, USE_YN, REG_DT
+		FROM MEMBER
+		WHERE MEMBER_ID = #{memberId}
+		  AND USE_YN = 'Y'
+	</select>
+
+	<select id="selectMemberList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			MEMBER_ID, MEMBER_NM, TEL_LAST4, EMAIL, USE_YN, REG_DT
+		FROM MEMBER
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND MEMBER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND MEMBER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 2">
+					AND TEL_LAST4 LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY MEMBER_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectMemberListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM MEMBER
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND MEMBER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND MEMBER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 2">
+					AND TEL_LAST4 LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<!-- 마이그레이션용: 미암호화 회원만 조회 -->
+	<select id="selectAllMembers" resultMap="member">
+		SELECT MEMBER_ID, MEMBER_NM, PASSWORD, TEL, TEL_LAST4, EMAIL, USE_YN, REG_DT
+		FROM MEMBER
+		WHERE PASSWORD NOT LIKE '$2a$%'
+		   OR (TEL IS NOT NULL AND TEL != '' AND TEL LIKE '0%')
+	</select>
+
+</mapper>

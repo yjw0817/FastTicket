@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<Configuration>
+    <Properties>
+        <Property name="LOG_DIR">D:/logs/fastticket</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%c{1.}] [%M:%L] - %m%n</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 콘솔 출력 -->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%c] %m%n" />
+        </Console>
+
+        <!-- 전체 로그 (일별 롤링) -->
+        <RollingFile name="appLog"
+                     fileName="${LOG_DIR}/app.log"
+                     filePattern="${LOG_DIR}/app_%d{yyyy-MM-dd}_%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="30" />
+        </RollingFile>
+
+        <!-- 에러 로그 (ERROR 이상만) -->
+        <RollingFile name="errorLog"
+                     fileName="${LOG_DIR}/error.log"
+                     filePattern="${LOG_DIR}/error_%d{yyyy-MM-dd}_%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="60" />
+        </RollingFile>
+
+        <!-- SQL 로그 -->
+        <RollingFile name="sqlLog"
+                     fileName="${LOG_DIR}/sql.log"
+                     filePattern="${LOG_DIR}/sql_%d{yyyy-MM-dd}_%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="14" />
+        </RollingFile>
+        <!-- API 파라미터 로그 -->
+        <RollingFile name="apiParamLog"
+                     fileName="${LOG_DIR}/api-param.log"
+                     filePattern="${LOG_DIR}/api-param_%d{yyyy-MM-dd}_%i.log.gz">
+            <PatternLayout pattern="%m" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="30" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- API 파라미터 로그 (전용) -->
+        <Logger name="API_PARAM_LOGGER" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="apiParamLog" />
+        </Logger>
+
+        <!-- FastTicket 앱 로그 -->
+        <Logger name="com.ftk" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="appLog" />
+            <AppenderRef ref="errorLog" />
+        </Logger>
+
+        <!-- SQL -->
+        <Logger name="java.sql" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="sqlLog" />
+        </Logger>
+        <Logger name="jdbc.sqltiming" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="sqlLog" />
+        </Logger>
+
+        <!-- eGov Framework -->
+        <Logger name="egovframework" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="appLog" />
+        </Logger>
+        <Logger name="org.egovframe" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="appLog" />
+        </Logger>
+
+        <!-- Spring -->
+        <Logger name="org.springframework" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="appLog" />
+        </Logger>
+
+        <Root level="INFO">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="appLog" />
+            <AppenderRef ref="errorLog" />
+        </Root>
+    </Loggers>
+</Configuration>

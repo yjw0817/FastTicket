@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.booking.mapper.BookingDetailMapper">
+
+	<resultMap id="bookingDetail" type="com.ftk.booking.vo.BookingDetailVO">
+		<result property="detailId"    column="DETAIL_ID"/>
+		<result property="bookingId"   column="BOOKING_ID"/>
+		<result property="priceId"     column="PRICE_ID"/>
+		<result property="seatId"      column="SEAT_ID"/>
+		<result property="ticketAmt"   column="TICKET_AMT"/>
+		<result property="cancelYn"    column="CANCEL_YN"/>
+		<result property="priceNm"     column="PRICE_NM"/>
+		<result property="priceType"   column="PRICE_TYPE"/>
+		<result property="price"       column="PRICE"/>
+		<result property="seatRow"     column="SEAT_ROW"/>
+		<result property="seatNo"      column="SEAT_NO"/>
+	</resultMap>
+
+	<!-- 예매상세 등록 -->
+	<insert id="insertBookingDetail" parameterType="bookingDetailVO">
+		INSERT INTO BOOKING_DETAIL
+			( DETAIL_ID
+			, BOOKING_ID
+			, PRICE_ID
+			, SEAT_ID
+			, TICKET_AMT
+			, CANCEL_YN )
+		VALUES
+			( #{detailId}
+			, #{bookingId}
+			, #{priceId}
+			, #{seatId}
+			, #{ticketAmt}
+			, #{cancelYn} )
+	</insert>
+
+	<!-- 예매ID에 해당하는 모든 예매상세 삭제 -->
+	<delete id="deleteBookingDetailByBooking" parameterType="bookingDetailVO">
+		DELETE FROM BOOKING_DETAIL
+		WHERE BOOKING_ID = #{bookingId}
+	</delete>
+
+	<!-- 예매ID에 해당하는 예매상세 목록 조회 (티켓가격, 좌석 조인) -->
+	<select id="selectBookingDetailList" parameterType="bookingDetailVO" resultMap="bookingDetail">
+		SELECT
+			  BD.DETAIL_ID
+			, BD.BOOKING_ID
+			, BD.PRICE_ID
+			, BD.SEAT_ID
+			, BD.TICKET_AMT
+			, BD.CANCEL_YN
+			, TP.PRICE_NM
+			, TP.PRICE_TYPE
+			, TP.PRICE
+			, S.SEAT_ROW
+			, S.SEAT_NO
+		FROM BOOKING_DETAIL BD
+		LEFT JOIN TICKET_PRICE TP ON BD.PRICE_ID = TP.PRICE_ID
+		LEFT JOIN SEAT S          ON BD.SEAT_ID  = S.SEAT_ID
+		WHERE BD.BOOKING_ID = #{bookingId}
+		ORDER BY BD.DETAIL_ID ASC
+	</select>
+
+</mapper>

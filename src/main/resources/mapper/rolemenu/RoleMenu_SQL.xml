@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.rolemenu.mapper.RoleMenuMapper">
+
+	<insert id="insertRoleMenu" parameterType="roleMenuVO">
+		INSERT INTO ROLE_MENU
+			( ROLE_ID
+			, MENU_ID
+			, REG_DT )
+		VALUES
+			( #{roleId}
+			, #{menuId}
+			, GETDATE() )
+	</insert>
+
+	<delete id="deleteRoleMenu" parameterType="roleMenuVO">
+		DELETE FROM ROLE_MENU
+		WHERE ROLE_ID = #{roleId}
+		  AND MENU_ID = #{menuId}
+	</delete>
+
+	<select id="selectRoleMenuList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			RM.ROLE_ID,
+			R.ROLE_NM,
+			RM.MENU_ID,
+			MN.MENU_NM,
+			MN.MENU_URL,
+			RM.REG_DT
+		FROM ROLE_MENU RM
+		INNER JOIN ROLE R  ON RM.ROLE_ID = R.ROLE_ID
+		INNER JOIN MENU MN ON RM.MENU_ID = MN.MENU_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND R.ROLE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND MN.MENU_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY RM.ROLE_ID ASC, RM.MENU_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectRoleMenuListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM ROLE_MENU RM
+		INNER JOIN ROLE R  ON RM.ROLE_ID = R.ROLE_ID
+		INNER JOIN MENU MN ON RM.MENU_ID = MN.MENU_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND R.ROLE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND MN.MENU_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectMenusByRole" parameterType="string" resultType="egovMap">
+		SELECT
+			RM.ROLE_ID,
+			RM.MENU_ID,
+			MN.MENU_NM,
+			MN.MENU_URL,
+			RM.REG_DT
+		FROM ROLE_MENU RM
+		INNER JOIN MENU MN ON RM.MENU_ID = MN.MENU_ID
+		WHERE RM.ROLE_ID = #{roleId}
+		ORDER BY MN.SORT_ORDER ASC
+	</select>
+
+	<!-- 권한에 매핑된 메뉴 ID 목록 (체크박스 상태용) -->
+	<select id="selectMenuIdsByRole" parameterType="string" resultType="string">
+		SELECT MENU_ID
+		FROM ROLE_MENU
+		WHERE ROLE_ID = #{roleId}
+	</select>
+
+	<!-- 권한의 전체 메뉴 매핑 삭제 (일괄 저장 시 사용) -->
+	<delete id="deleteRoleMenuByRole" parameterType="string">
+		DELETE FROM ROLE_MENU
+		WHERE ROLE_ID = #{roleId}
+	</delete>
+
+	<!-- 드롭다운용: 전체 활성 권한 목록 -->
+	<select id="selectAllRoles" resultType="egovMap">
+		SELECT ROLE_ID, ROLE_NM
+		FROM ROLE
+		WHERE USE_YN = 'Y'
+		ORDER BY ROLE_ID ASC
+	</select>
+
+	<!-- 드롭다운용: 전체 활성 메뉴 목록 -->
+	<select id="selectAllMenus" resultType="egovMap">
+		SELECT MENU_ID, MENU_NM, MENU_URL
+		FROM MENU
+		WHERE USE_YN = 'Y'
+		ORDER BY SORT_ORDER ASC
+	</select>
+
+</mapper>

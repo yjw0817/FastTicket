@@ -1,0 +1,184 @@
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+#sysbtn {
+    float: none;
+    text-align: right;
+    padding: 14px 0 0;
+    margin: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+#sysbtn ul { margin: 0; padding: 0; list-style: none; display: flex; gap: 8px; }
+#sysbtn li { list-style: none; margin: 0; padding: 0; float: left; display: inline; }
+#sysbtn1 {
+    text-align: left;
+    padding: 14px 0 0;
+    margin: 0;
+    width: auto;
+}
+#sysbtn1 ul { margin: 0; padding: 0; list-style: none; display: flex; gap: 8px; }
+#sysbtn1 li { list-style: none; margin: 0; padding: 0; float: left; display: inline; }
+#sysbtn:empty { padding: 0; margin: 0; }
+
+/* Bootstrap overrides */
+button {
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background: none;
+    font-family: var(--font);
+    white-space: nowrap;
+}
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font);
+    font-weight: 500;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+    padding: 7px 16px;
+    transition: all .12s;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+}
+.btn-primary {
+    background: var(--blue) !important;
+    border-color: var(--blue) !important;
+    color: #fff !important;
+}
+.btn-primary:hover {
+    background: var(--blue-hover) !important;
+    border-color: var(--blue-hover) !important;
+    box-shadow: 0 2px 6px rgba(0,122,255,.25);
+}
+.btn-danger {
+    background: var(--red) !important;
+    border-color: var(--red) !important;
+    color: #fff !important;
+}
+.btn-danger:hover {
+    background: var(--red-hover) !important;
+    border-color: var(--red-hover) !important;
+}
+.btn-outline-secondary {
+    color: var(--ink-2) !important;
+    border-color: var(--input-line) !important;
+    background: var(--card) !important;
+}
+.btn-outline-secondary:hover {
+    background: var(--card-dim) !important;
+    color: var(--ink) !important;
+    border-color: #adb5bd !important;
+}
+.btn_blue_l, .btn_blue_r { display: none; }
+
+
+/* ================================================================
+   FORM TABLE (Register/Edit)
+   ================================================================ */
+.tbtd_caption, .tbtd_caption_re {
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--card-dim);
+    text-align: right;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    white-space: nowrap;
+    width: 140px;
+    border-left: none;
+    border-right: 1px solid var(--line);
+    border-top: none;
+}
+.tbtd_content, .tbtd_content_re {
+    background: var(--card);
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--line);
+    border-left: none; border-right: none; border-top: none;
+}
+/* Form table accent top */
+#table .table[style*="border-top"] {
+    border: none !important;
+    border-top: 2px solid var(--blue) !important;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+
+/* ================================================================
+   FORM INPUTS
+   ================================================================ */
+input {
+    height: 34px;
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--ink);
+    padding: 6px 10px;
+    margin: 0;
+    border: 1px solid var(--input-line);
+    border-radius: var(--radius-sm);
+    transition: border-color .12s, box-shadow .12s;
+    outline: none;
+    background: var(--card);
+}
+input:focus {
+    border-color: var(--blue);
+    box-shadow: var(--blue-ring);
+}
+input.txt {
+    height: 34px;
+    background: var(--card);
+    border: 1px solid var(--input-line);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    color: var(--ink);
+}
+input.essentiality {
+    height: 34px;
+    background: var(--card-dim);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    color: var(--ink-3);
+    cursor: not-allowed;
+}
+select {
+    font-family: var(--font);
+    font-size: 13px;
+    height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--input-line);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    color: var(--ink);
+    outline: none;
+    transition: border-color .12s;
+}
+select:focus {
+    border-color: var(--blue);
+    box-shadow: var(--blue-ring);
+}
+textarea {
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--ink);
+    padding: 8px 10px;
+    border: 1px solid var(--input-line);
+    border-radius: var(--radius-sm);
+    transition: border-color .12s, box-shadow .12s;
+    outline: none;
+    background: var(--card);
+}
+textarea:focus {
+    border-color: var(--blue);
+    box-shadow: var(--blue-ring);
+}

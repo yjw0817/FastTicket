@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+		<typeAlias alias="egovMap" type="org.egovframe.rte.psl.dataaccess.util.EgovMap"/>
+		<typeAlias alias="searchVO" type="com.ftk.sample.vo.SampleDefaultVO"/>
+		<typeAlias alias="sampleVO" type="com.ftk.sample.vo.SampleVO"/>
+		<typeAlias alias="commonDefaultVO" type="com.ftk.common.vo.CommonDefaultVO"/>
+		<typeAlias alias="venueVO" type="com.ftk.venue.vo.VenueVO"/>
+		<typeAlias alias="memberVO" type="com.ftk.member.vo.MemberVO"/>
+		<typeAlias alias="seatVO" type="com.ftk.seat.vo.SeatVO"/>
+		<typeAlias alias="programVO" type="com.ftk.program.vo.ProgramVO"/>
+		<typeAlias alias="ticketPriceVO" type="com.ftk.price.vo.TicketPriceVO"/>
+		<typeAlias alias="scheduleVO" type="com.ftk.schedule.vo.ScheduleVO"/>
+		<typeAlias alias="bookingVO" type="com.ftk.booking.vo.BookingVO"/>
+		<typeAlias alias="bookingDetailVO" type="com.ftk.booking.vo.BookingDetailVO"/>
+		<typeAlias alias="roleVO" type="com.ftk.role.vo.RoleVO"/>
+		<typeAlias alias="menuVO" type="com.ftk.menu.vo.MenuVO"/>
+		<typeAlias alias="userRoleVO" type="com.ftk.userrole.vo.UserRoleVO"/>
+		<typeAlias alias="roleMenuVO" type="com.ftk.rolemenu.vo.RoleMenuVO"/>
+		<typeAlias alias="commonCodeVO" type="com.ftk.commoncode.vo.CommonCodeVO"/>
+		<typeAlias alias="ticketTypeVO" type="com.ftk.tickettype.vo.TicketTypeVO"/>
+		<typeAlias alias="sessionPriceVO" type="com.ftk.sessionprice.vo.SessionPriceVO"/>
+		<typeAlias alias="productPriceVO" type="com.ftk.productprice.vo.ProductPriceVO"/>
+		<typeAlias alias="holidayVO" type="com.ftk.holiday.vo.HolidayVO"/>
+		<typeAlias alias="businessHoursVO" type="com.ftk.businesshours.vo.BusinessHoursVO"/>
+		<typeAlias alias="discountVO" type="com.ftk.discount.vo.DiscountVO"/>
+		<typeAlias alias="programTicketTypeVO" type="com.ftk.program.vo.ProgramTicketTypeVO"/>
+		<typeAlias alias="programDiscountVO" type="com.ftk.program.vo.ProgramDiscountVO"/>
+		<typeAlias alias="sessionTemplateVO" type="com.ftk.pricetemplate.vo.SessionTemplateVO"/>
+		<typeAlias alias="priceTemplateVO" type="com.ftk.pricetemplate.vo.PriceTemplateVO"/>
+    </typeAliases>
+</configuration>

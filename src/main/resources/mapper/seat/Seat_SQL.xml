@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.seat.mapper.SeatMapper">
+
+	<insert id="insertSeat" parameterType="seatVO">
+		INSERT INTO SEAT
+			( SEAT_ID
+			, VENUE_ID
+			, SEAT_ROW
+			, SEAT_NO
+			, SEAT_GRADE
+			, USE_YN )
+		VALUES
+			( #{seatId}
+			, #{venueId}
+			, #{seatRow}
+			, #{seatNo}
+			, #{seatGrade}
+			, #{useYn} )
+	</insert>
+
+	<update id="updateSeat" parameterType="seatVO">
+		UPDATE SEAT
+		SET VENUE_ID  = #{venueId}
+		  , SEAT_ROW  = #{seatRow}
+		  , SEAT_NO   = #{seatNo}
+		  , SEAT_GRADE = #{seatGrade}
+		  , USE_YN    = #{useYn}
+		WHERE SEAT_ID = #{seatId}
+	</update>
+
+	<delete id="deleteSeat" parameterType="seatVO">
+		DELETE FROM SEAT
+		WHERE SEAT_ID = #{seatId}
+	</delete>
+
+	<select id="selectSeat" parameterType="seatVO" resultType="seatVO">
+		SELECT
+			S.SEAT_ID
+		  , S.VENUE_ID
+		  , S.SEAT_ROW
+		  , S.SEAT_NO
+		  , S.SEAT_GRADE
+		  , S.USE_YN
+		  , V.VENUE_NM
+		FROM SEAT S
+		LEFT JOIN VENUE V ON S.VENUE_ID = V.VENUE_ID
+		WHERE S.SEAT_ID = #{seatId}
+	</select>
+
+	<select id="selectSeatList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			S.SEAT_ID
+		  , S.VENUE_ID
+		  , S.SEAT_ROW
+		  , S.SEAT_NO
+		  , S.SEAT_GRADE
+		  , S.USE_YN
+		  , V.VENUE_NM
+		FROM SEAT S
+		LEFT JOIN VENUE V ON S.VENUE_ID = V.VENUE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND S.SEAT_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND S.SEAT_ROW LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY S.VENUE_ID ASC, S.SEAT_ROW ASC, S.SEAT_NO ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectSeatListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*)
+		FROM SEAT S
+		LEFT JOIN VENUE V ON S.VENUE_ID = V.VENUE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND S.SEAT_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND S.SEAT_ROW LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectSeatListByVenue" parameterType="seatVO" resultType="egovMap">
+		SELECT
+			SEAT_ID
+		  , VENUE_ID
+		  , SEAT_ROW
+		  , SEAT_NO
+		  , SEAT_GRADE
+		  , USE_YN
+		FROM SEAT
+		WHERE VENUE_ID = #{venueId}
+		  AND USE_YN = 'Y'
+		ORDER BY SEAT_ROW ASC, SEAT_NO ASC
+	</select>
+
+</mapper>

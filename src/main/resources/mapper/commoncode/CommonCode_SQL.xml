@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.commoncode.mapper.CommonCodeMapper">
+
+	<resultMap id="commonCode" type="commonCodeVO">
+		<result property="codeId"      column="CODE_ID"/>
+		<result property="codeNm"      column="CODE_NM"/>
+		<result property="codeValue"   column="CODE_VALUE"/>
+		<result property="parentId"    column="PARENT_ID"/>
+		<result property="depth"       column="DEPTH"/>
+		<result property="sortOrder"   column="SORT_ORDER"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="useYn"       column="USE_YN"/>
+		<result property="regDt"       column="REG_DT"/>
+		<result property="valLabel1"   column="VAL_LABEL1"/>
+		<result property="val1"        column="VAL1"/>
+		<result property="valLabel2"   column="VAL_LABEL2"/>
+		<result property="val2"        column="VAL2"/>
+		<result property="valLabel3"   column="VAL_LABEL3"/>
+		<result property="val3"        column="VAL3"/>
+		<result property="valLabel4"   column="VAL_LABEL4"/>
+		<result property="val4"        column="VAL4"/>
+	</resultMap>
+
+	<insert id="insertCommonCode" parameterType="commonCodeVO">
+		INSERT INTO COMMON_CODE
+			(CODE_ID, CODE_NM, CODE_VALUE, PARENT_ID, DEPTH, SORT_ORDER, DESCRIPTION, USE_YN,
+			 VAL_LABEL1, VAL1, VAL_LABEL2, VAL2, VAL_LABEL3, VAL3, VAL_LABEL4, VAL4, REG_DT)
+		VALUES
+			(#{codeId}, #{codeNm}, #{codeValue}, #{parentId}, #{depth}, #{sortOrder}, #{description}, #{useYn},
+			 #{valLabel1}, #{val1}, #{valLabel2}, #{val2}, #{valLabel3}, #{val3}, #{valLabel4}, #{val4}, GETDATE())
+	</insert>
+
+	<update id="updateCommonCode" parameterType="commonCodeVO">
+		UPDATE COMMON_CODE
+		SET CODE_NM     = #{codeNm}
+		  , CODE_VALUE  = #{codeValue}
+		  , SORT_ORDER  = #{sortOrder}
+		  , DESCRIPTION = #{description}
+		  , USE_YN      = #{useYn}
+		  , VAL_LABEL1  = #{valLabel1}
+		  , VAL1        = #{val1}
+		  , VAL_LABEL2  = #{valLabel2}
+		  , VAL2        = #{val2}
+		  , VAL_LABEL3  = #{valLabel3}
+		  , VAL3        = #{val3}
+		  , VAL_LABEL4  = #{valLabel4}
+		  , VAL4        = #{val4}
+		WHERE CODE_ID = #{codeId}
+	</update>
+
+	<delete id="deleteCommonCode" parameterType="commonCodeVO">
+		DELETE FROM COMMON_CODE
+		WHERE CODE_ID = #{codeId}
+	</delete>
+
+	<select id="selectCommonCode" parameterType="commonCodeVO" resultMap="commonCode">
+		SELECT CODE_ID, CODE_NM, CODE_VALUE, PARENT_ID, DEPTH, SORT_ORDER,
+			   DESCRIPTION, USE_YN,
+			   VAL_LABEL1, VAL1, VAL_LABEL2, VAL2, VAL_LABEL3, VAL3, VAL_LABEL4, VAL4,
+			   CONVERT(VARCHAR(19), REG_DT, 120) AS REG_DT
+		FROM COMMON_CODE
+		WHERE CODE_ID = #{codeId}
+	</select>
+
+	<select id="selectCommonCodeListByParent" parameterType="commonCodeVO" resultMap="commonCode">
+		SELECT CODE_ID, CODE_NM, CODE_VALUE, PARENT_ID, DEPTH, SORT_ORDER,
+			   DESCRIPTION, USE_YN,
+			   VAL_LABEL1, VAL1, VAL_LABEL2, VAL2, VAL_LABEL3, VAL3, VAL_LABEL4, VAL4,
+			   CONVERT(VARCHAR(19), REG_DT, 120) AS REG_DT
+		FROM COMMON_CODE
+		WHERE DEPTH = #{depth}
+		<choose>
+			<when test="parentId != null and parentId != ''">
+				AND PARENT_ID = #{parentId}
+			</when>
+			<otherwise>
+				AND PARENT_ID IS NULL
+			</otherwise>
+		</choose>
+		ORDER BY SORT_ORDER ASC, CODE_ID ASC
+	</select>
+
+	<select id="selectChildCount" parameterType="string" resultType="int">
+		SELECT COUNT(*) FROM COMMON_CODE WHERE PARENT_ID = #{codeId}
+	</select>
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE form-validation PUBLIC
+    "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1//EN"
+    "http://jakarta.apache.org/commons/dtds/validator_1_1.dtd">
+
+<form-validation>
+
+    <formset>
+        <form name="sampleVO">
+        	<field property="name" depends="required">
+        		<arg0 key="title.sample.name" />
+			</field>
+			<field property="description" depends="required">
+                <arg0 key="title.sample.description" />
+            </field>
+        	<field property="regUser" depends="required">
+        		<arg0 key="title.sample.regUser" />
+			</field>
+        </form>
+
+        <form name="venueVO">
+        	<field property="venueNm" depends="required">
+        		<arg0 key="title.venue.venueNm" />
+			</field>
+        	<field property="totalSeats" depends="required">
+        		<arg0 key="title.venue.totalSeats" />
+			</field>
+        </form>
+
+        <form name="memberVO">
+        	<field property="memberNm" depends="required">
+        		<arg0 key="title.member.memberNm" />
+			</field>
+        	<field property="password" depends="required">
+        		<arg0 key="title.member.password" />
+			</field>
+        </form>
+
+        <form name="seatVO">
+        	<field property="venueId" depends="required">
+        		<arg0 key="title.seat.venueId" />
+			</field>
+        	<field property="seatRow" depends="required">
+        		<arg0 key="title.seat.seatRow" />
+			</field>
+        	<field property="seatNo" depends="required">
+        		<arg0 key="title.seat.seatNo" />
+			</field>
+        </form>
+
+        <form name="programVO">
+        	<field property="programNm" depends="required">
+        		<arg0 key="title.program.programNm" />
+			</field>
+        	<field property="programType" depends="required">
+        		<arg0 key="title.program.programType" />
+			</field>
+        </form>
+
+        <form name="ticketPriceVO">
+        	<field property="programId" depends="required">
+        		<arg0 key="title.ticketPrice.programId" />
+			</field>
+        	<field property="priceType" depends="required">
+        		<arg0 key="title.ticketPrice.priceType" />
+			</field>
+        	<field property="priceNm" depends="required">
+        		<arg0 key="title.ticketPrice.priceNm" />
+			</field>
+        </form>
+
+        <form name="scheduleVO">
+        	<field property="programId" depends="required">
+        		<arg0 key="title.schedule.programId" />
+			</field>
+        	<field property="eventDate" depends="required">
+        		<arg0 key="title.schedule.eventDate" />
+			</field>
+        	<field property="eventTime" depends="required">
+        		<arg0 key="title.schedule.eventTime" />
+			</field>
+        </form>
+
+        <form name="ticketTypeVO">
+        	<field property="typeNm" depends="required">
+        		<arg0 key="title.ticketType.typeNm" />
+			</field>
+        </form>
+
+        <form name="bookingVO">
+        	<field property="scheduleId" depends="required">
+        		<arg0 key="title.booking.scheduleId" />
+			</field>
+        	<field property="bookerNm" depends="required">
+        		<arg0 key="title.booking.bookerNm" />
+			</field>
+        	<field property="bookerTel" depends="required">
+        		<arg0 key="title.booking.bookerTel" />
+			</field>
+        </form>
+    </formset>
+
+</form-validation>

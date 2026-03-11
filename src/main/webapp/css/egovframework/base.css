@@ -1,0 +1,71 @@
+/* ================================================================
+   FastTicket Admin — Base (Variables, Reset, Typography)
+   ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+:root {
+    /* ── Brand ── */
+    --blue: #007AFF;
+    --blue-hover: #0062d1;
+    --blue-light: #e8f2ff;
+    --blue-ghost: rgba(0,122,255,.05);
+    --blue-ring: 0 0 0 3px rgba(0,122,255,.2);
+    --red: #FF3B30;
+    --red-hover: #e0332a;
+    --green: #34C759;
+
+    /* ── Surfaces ── */
+    --page-bg: #f2f3f5;
+    --card: #ffffff;
+    --card-dim: #f8f9fa;
+
+    /* ── Borders ── */
+    --line: #e9ecef;
+    --line-light: #f0f1f3;
+    --input-line: #ced4da;
+
+    /* ── Ink ── */
+    --ink: #212529;
+    --ink-2: #495057;
+    --ink-3: #868e96;
+    --ink-4: #adb5bd;
+
+    /* ── Sidebar ── */
+    --nav-w: 232px;
+    --nav-bg: #222222;
+    --nav-ink: rgba(255,255,255,.65);
+    --nav-ink-hover: rgba(255,255,255,.85);
+    --nav-ink-active: #ffffff;
+    --nav-active-bg: rgba(255,255,255,.08);
+    --nav-hover-bg: rgba(255,255,255,.04);
+    --nav-accent: #5AC8FA;
+
+    /* ── Topbar ── */
+    --bar-h: 54px;
+
+    /* ── Shared ── */
+    --radius: 8px;
+    --radius-sm: 5px;
+    --shadow: 0 1px 3px rgba(0,0,0,.05), 0 0 0 1px rgba(0,0,0,.02);
+    --font: 'DM Sans', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+caption { display: none !important; }
+body {
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--page-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+a { color: var(--blue); text-decoration: none; transition: color .12s; }
+a:hover { color: var(--blue-hover); }
+a:visited { color: var(--blue); }
+a.btn { color: inherit; }
+a.btn-primary, a.btn-primary:visited, a.btn-primary:hover { color: #fff !important; }
+img { border: 0; vertical-align: middle; }
+table { border-collapse: collapse; }

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.schedule.mapper.ScheduleMapper">
+
+	<resultMap id="schedule" type="com.ftk.schedule.vo.ScheduleVO">
+		<result property="scheduleId"       column="SCHEDULE_ID"/>
+		<result property="programId"        column="PROGRAM_ID"/>
+		<result property="eventDate"        column="EVENT_DATE"/>
+		<result property="eventTime"        column="EVENT_TIME"/>
+		<result property="totalSeats"       column="TOTAL_SEATS"/>
+		<result property="availSeats"       column="AVAIL_SEATS"/>
+		<result property="sessionNo"        column="SESSION_NO"/>
+		<result property="onlineCapacity"   column="ONLINE_CAPACITY"/>
+		<result property="offlineCapacity"  column="OFFLINE_CAPACITY"/>
+		<result property="onlineAvail"      column="ONLINE_AVAIL"/>
+		<result property="offlineAvail"     column="OFFLINE_AVAIL"/>
+		<result property="status"           column="STATUS"/>
+		<result property="regDt"            column="REG_DT"/>
+		<result property="programNm"        column="PROGRAM_NM"/>
+	</resultMap>
+
+	<insert id="insertSchedule" parameterType="scheduleVO">
+		INSERT INTO SCHEDULE
+			( SCHEDULE_ID
+			, PROGRAM_ID
+			, EVENT_DATE
+			, EVENT_TIME
+			, TOTAL_SEATS
+			, AVAIL_SEATS
+			, SESSION_NO
+			, ONLINE_CAPACITY
+			, OFFLINE_CAPACITY
+			, ONLINE_AVAIL
+			, OFFLINE_AVAIL
+			, STATUS
+			, REG_DT )
+		VALUES
+			( #{scheduleId}
+			, #{programId}
+			, #{eventDate, jdbcType=DATE}
+			, #{eventTime}
+			, #{totalSeats}
+			, #{availSeats}
+			, #{sessionNo}
+			, #{onlineCapacity}
+			, #{offlineCapacity}
+			, #{onlineAvail}
+			, #{offlineAvail}
+			, #{status}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateSchedule" parameterType="scheduleVO">
+		UPDATE SCHEDULE
+		SET PROGRAM_ID       = #{programId}
+		  , EVENT_DATE       = #{eventDate, jdbcType=DATE}
+		  , EVENT_TIME       = #{eventTime}
+		  , TOTAL_SEATS      = #{totalSeats}
+		  , AVAIL_SEATS      = #{availSeats}
+		  , SESSION_NO       = #{sessionNo}
+		  , ONLINE_CAPACITY  = #{onlineCapacity}
+		  , OFFLINE_CAPACITY = #{offlineCapacity}
+		  , ONLINE_AVAIL     = #{onlineAvail}
+		  , OFFLINE_AVAIL    = #{offlineAvail}
+		  , STATUS           = #{status}
+		WHERE SCHEDULE_ID = #{scheduleId}
+	</update>
+
+	<delete id="deleteSchedule" parameterType="scheduleVO">
+		DELETE FROM SCHEDULE
+		WHERE SCHEDULE_ID = #{scheduleId}
+	</delete>
+
+	<select id="selectSchedule" parameterType="scheduleVO" resultMap="schedule">
+		SELECT
+			S.SCHEDULE_ID
+			, S.PROGRAM_ID
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, S.TOTAL_SEATS
+			, S.AVAIL_SEATS
+			, S.SESSION_NO
+			, S.ONLINE_CAPACITY
+			, S.OFFLINE_CAPACITY
+			, S.ONLINE_AVAIL
+			, S.OFFLINE_AVAIL
+			, S.STATUS
+			, S.REG_DT
+			, P.PROGRAM_NM
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE S.SCHEDULE_ID = #{scheduleId}
+	</select>
+
+	<select id="selectScheduleList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			S.SCHEDULE_ID
+			, S.PROGRAM_ID
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, S.TOTAL_SEATS
+			, S.AVAIL_SEATS
+			, S.SESSION_NO
+			, S.ONLINE_CAPACITY
+			, S.OFFLINE_CAPACITY
+			, S.ONLINE_AVAIL
+			, S.OFFLINE_AVAIL
+			, S.STATUS
+			, S.REG_DT
+			, P.PROGRAM_NM
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND S.SCHEDULE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND S.STATUS = #{searchKeyword}
+				</when>
+			</choose>
+		</if>
+		ORDER BY S.EVENT_DATE ASC, S.SESSION_NO ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectScheduleListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND S.SCHEDULE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND S.STATUS = #{searchKeyword}
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectScheduleListByProgram" parameterType="scheduleVO" resultType="egovMap">
+		SELECT
+			S.SCHEDULE_ID
+			, S.PROGRAM_ID
+			, S.EVENT_DATE
+			, S.EVENT_TIME
+			, S.TOTAL_SEATS
+			, S.AVAIL_SEATS
+			, S.SESSION_NO
+			, S.ONLINE_CAPACITY
+			, S.OFFLINE_CAPACITY
+			, S.ONLINE_AVAIL
+			, S.OFFLINE_AVAIL
+			, S.STATUS
+			, S.REG_DT
+			, P.PROGRAM_NM
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE S.PROGRAM_ID = #{programId}
+		AND S.STATUS = 'OPEN'
+		ORDER BY S.EVENT_DATE ASC, S.SESSION_NO ASC
+	</select>
+
+	<!-- 온라인 예약: 프로그램의 예약 가능 날짜 목록 (당일 제외, 온라인 잔여석 > 0) -->
+	<select id="selectAvailableDates" parameterType="scheduleVO" resultType="string">
+		SELECT DISTINCT CONVERT(VARCHAR(10), S.EVENT_DATE, 23)
+		FROM SCHEDULE S
+		WHERE S.PROGRAM_ID = #{programId}
+		  AND S.STATUS = 'OPEN'
+		  AND S.ONLINE_AVAIL > 0
+		  AND S.EVENT_DATE > CAST(GETDATE() AS DATE)
+		ORDER BY 1 ASC
+	</select>
+
+	<!-- 온라인 예약: 특정 날짜의 예약 가능 회차 목록 -->
+	<select id="selectAvailableSessions" parameterType="scheduleVO" resultMap="schedule">
+		SELECT
+			S.SCHEDULE_ID, S.PROGRAM_ID, S.EVENT_DATE, S.EVENT_TIME,
+			S.TOTAL_SEATS, S.AVAIL_SEATS, S.SESSION_NO,
+			S.ONLINE_CAPACITY, S.OFFLINE_CAPACITY, S.ONLINE_AVAIL, S.OFFLINE_AVAIL,
+			S.STATUS, P.PROGRAM_NM
+		FROM SCHEDULE S
+		LEFT JOIN PROGRAM P ON S.PROGRAM_ID = P.PROGRAM_ID
+		WHERE S.PROGRAM_ID = #{programId}
+		  AND CONVERT(VARCHAR(10), S.EVENT_DATE, 23) = #{eventDate}
+		  AND S.STATUS = 'OPEN'
+		  AND S.ONLINE_AVAIL > 0
+		ORDER BY S.SESSION_NO ASC
+	</select>
+
+	<!-- 온라인 예약: 온라인 잔여석 차감 (원자적) -->
+	<update id="decreaseOnlineAvail" parameterType="scheduleVO">
+		UPDATE SCHEDULE
+		SET ONLINE_AVAIL = ONLINE_AVAIL - #{onlineAvail},
+		    AVAIL_SEATS  = AVAIL_SEATS - #{onlineAvail}
+		WHERE SCHEDULE_ID = #{scheduleId}
+		  AND ONLINE_AVAIL >= #{onlineAvail}
+	</update>
+
+	<!-- 달력 뷰: 프로그램의 월별 일정 요약 -->
+	<select id="selectCalendarSummary" parameterType="map" resultType="egovMap">
+		SELECT
+			CONVERT(VARCHAR(10), S.EVENT_DATE, 23) AS EVENT_DATE
+		  , COUNT(*) AS SESSION_CNT
+		  , S.STATUS
+		  , CASE
+				WHEN EXISTS (SELECT 1 FROM HOLIDAY H WHERE H.HOLIDAY_DATE = S.EVENT_DATE AND H.USE_YN = 'Y') THEN 'HOLIDAY'
+				WHEN DATEPART(DW, S.EVENT_DATE) IN (1, 7) THEN 'WEEKEND'
+				ELSE 'WEEKDAY'
+			END AS DAY_TYPE
+		  , CASE
+				WHEN EXISTS (SELECT 1 FROM DATE_PRICE_OVERRIDE DPO WHERE DPO.PROGRAM_ID = S.PROGRAM_ID AND DPO.EVENT_DATE = S.EVENT_DATE) THEN 'Y'
+				ELSE 'N'
+			END AS HAS_PRICE_OVERRIDE
+		  , CASE
+				WHEN EXISTS (SELECT 1 FROM DATE_SESSION_OVERRIDE DSO WHERE DSO.PROGRAM_ID = S.PROGRAM_ID AND DSO.EVENT_DATE = S.EVENT_DATE) THEN 'Y'
+				ELSE 'N'
+			END AS HAS_SESSION_OVERRIDE
+		FROM SCHEDULE S
+		WHERE S.PROGRAM_ID = #{programId}
+		  AND CONVERT(VARCHAR(7), S.EVENT_DATE, 23) = #{yearMonth}
+		GROUP BY S.EVENT_DATE, S.STATUS, S.PROGRAM_ID
+		ORDER BY S.EVENT_DATE
+	</select>
+
+	<!-- 달력 뷰: 날짜별 상세 (회차+가격) -->
+	<select id="selectDateDetail" parameterType="map" resultType="egovMap">
+		SELECT
+			S.SCHEDULE_ID
+		  , S.SESSION_NO
+		  , S.EVENT_TIME
+		  , S.ONLINE_AVAIL
+		  , S.OFFLINE_AVAIL
+		  , S.STATUS
+		  , CASE
+				WHEN EXISTS (SELECT 1 FROM HOLIDAY H WHERE H.HOLIDAY_DATE = S.EVENT_DATE AND H.USE_YN = 'Y') THEN 'HOLIDAY'
+				WHEN DATEPART(DW, S.EVENT_DATE) IN (1, 7) THEN 'WEEKEND'
+				ELSE 'WEEKDAY'
+			END AS DAY_TYPE
+		  , DSO.ENABLED AS SESSION_OVERRIDE
+		  , DSO.REASON AS SESSION_OVERRIDE_REASON
+		FROM SCHEDULE S
+		LEFT JOIN DATE_SESSION_OVERRIDE DSO
+			ON S.PROGRAM_ID = DSO.PROGRAM_ID AND S.EVENT_DATE = DSO.EVENT_DATE AND S.SESSION_NO = DSO.SESSION_NO
+		WHERE S.PROGRAM_ID = #{programId}
+		  AND CONVERT(VARCHAR(10), S.EVENT_DATE, 23) = #{eventDate}
+		ORDER BY S.SESSION_NO
+	</select>
+
+	<!-- 달력 뷰: 날짜별 가격 (템플릿 + override) -->
+	<select id="selectDatePrices" parameterType="map" resultType="egovMap">
+		SELECT
+			PTT.TYPE_ID
+		  , TT.TYPE_NM
+		  , #{sessionNo} AS SESSION_NO
+		  , COALESCE(DPO.PRICE, PT.PRICE) AS PRICE
+		  , CASE WHEN DPO.PRICE IS NOT NULL THEN 'Y' ELSE 'N' END AS IS_OVERRIDE
+		  , DPO.REASON AS OVERRIDE_REASON
+		FROM PROGRAM_TICKET_TYPE PTT
+		JOIN TICKET_TYPE TT ON PTT.TYPE_ID = TT.TYPE_ID
+		LEFT JOIN PRICE_TEMPLATE PT
+			ON PT.PROGRAM_ID = PTT.PROGRAM_ID
+		   AND PT.SESSION_NO = #{sessionNo}
+		   AND PT.TYPE_ID = PTT.TYPE_ID
+		   AND PT.DAY_TYPE = #{dayType}
+		LEFT JOIN DATE_PRICE_OVERRIDE DPO
+			ON DPO.PROGRAM_ID = PTT.PROGRAM_ID
+		   AND DPO.EVENT_DATE = #{eventDate}
+		   AND DPO.SESSION_NO = #{sessionNo}
+		   AND DPO.TYPE_ID = PTT.TYPE_ID
+		WHERE PTT.PROGRAM_ID = #{programId}
+		ORDER BY PTT.SORT_ORDER
+	</select>
+
+	<!-- DATE_PRICE_OVERRIDE CRUD -->
+	<insert id="insertDatePriceOverride" parameterType="map">
+		MERGE INTO DATE_PRICE_OVERRIDE AS T
+		USING (SELECT #{programId} AS PROGRAM_ID, #{eventDate} AS EVENT_DATE,
+		              #{sessionNo} AS SESSION_NO, #{typeId} AS TYPE_ID) AS S
+		ON T.PROGRAM_ID = S.PROGRAM_ID AND T.EVENT_DATE = S.EVENT_DATE
+		   AND T.SESSION_NO = S.SESSION_NO AND T.TYPE_ID = S.TYPE_ID
+		WHEN MATCHED THEN UPDATE SET PRICE = #{price}, REASON = #{reason}, REG_DT = GETDATE()
+		WHEN NOT MATCHED THEN INSERT (PROGRAM_ID, EVENT_DATE, SESSION_NO, TYPE_ID, PRICE, REASON, REG_DT)
+			VALUES (#{programId}, #{eventDate}, #{sessionNo}, #{typeId}, #{price}, #{reason}, GETDATE());
+	</insert>
+
+	<delete id="deleteDatePriceOverride" parameterType="map">
+		DELETE FROM DATE_PRICE_OVERRIDE
+		WHERE PROGRAM_ID = #{programId} AND EVENT_DATE = #{eventDate}
+		  AND SESSION_NO = #{sessionNo} AND TYPE_ID = #{typeId}
+	</delete>
+
+	<!-- DATE_SESSION_OVERRIDE CRUD -->
+	<insert id="insertDateSessionOverride" parameterType="map">
+		MERGE INTO DATE_SESSION_OVERRIDE AS T
+		USING (SELECT #{programId} AS PROGRAM_ID, #{eventDate} AS EVENT_DATE,
+		              #{sessionNo} AS SESSION_NO) AS S
+		ON T.PROGRAM_ID = S.PROGRAM_ID AND T.EVENT_DATE = S.EVENT_DATE AND T.SESSION_NO = S.SESSION_NO
+		WHEN MATCHED THEN UPDATE SET ENABLED = #{enabled}, REASON = #{reason}, REG_DT = GETDATE()
+		WHEN NOT MATCHED THEN INSERT (PROGRAM_ID, EVENT_DATE, SESSION_NO, ENABLED, REASON, REG_DT)
+			VALUES (#{programId}, #{eventDate}, #{sessionNo}, #{enabled}, #{reason}, GETDATE());
+	</insert>
+
+	<delete id="deleteDateSessionOverride" parameterType="map">
+		DELETE FROM DATE_SESSION_OVERRIDE
+		WHERE PROGRAM_ID = #{programId} AND EVENT_DATE = #{eventDate} AND SESSION_NO = #{sessionNo}
+	</delete>
+
+	<!-- 템플릿 기반 스케줄 생성: 특정 날짜에 스케줄이 이미 존재하는지 확인 -->
+	<select id="existsScheduleForDate" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM SCHEDULE
+		WHERE PROGRAM_ID = #{programId}
+		  AND CONVERT(VARCHAR(10), EVENT_DATE, 23) = #{eventDate}
+		  AND SESSION_NO = #{sessionNo}
+	</select>
+
+</mapper>

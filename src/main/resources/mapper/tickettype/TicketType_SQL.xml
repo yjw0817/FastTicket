@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.tickettype.mapper.TicketTypeMapper">
+
+	<resultMap id="ticketType" type="ticketTypeVO">
+		<result property="typeId"    column="TYPE_ID"/>
+		<result property="typeNm"    column="TYPE_NM"/>
+		<result property="sortOrder" column="SORT_ORDER"/>
+		<result property="useYn"     column="USE_YN"/>
+		<result property="regDt"     column="REG_DT"/>
+	</resultMap>
+
+	<insert id="insertTicketType" parameterType="ticketTypeVO">
+		INSERT INTO TICKET_TYPE
+			( TYPE_ID
+			, TYPE_NM
+			, SORT_ORDER
+			, USE_YN
+			, REG_DT )
+		VALUES
+			( #{typeId}
+			, #{typeNm}
+			, #{sortOrder}
+			, #{useYn}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateTicketType" parameterType="ticketTypeVO">
+		UPDATE TICKET_TYPE
+		SET TYPE_NM    = #{typeNm}
+		  , SORT_ORDER = #{sortOrder}
+		  , USE_YN     = #{useYn}
+		WHERE TYPE_ID = #{typeId}
+	</update>
+
+	<delete id="deleteTicketType" parameterType="ticketTypeVO">
+		DELETE FROM TICKET_TYPE
+		WHERE TYPE_ID = #{typeId}
+	</delete>
+
+	<select id="selectTicketType" parameterType="ticketTypeVO" resultMap="ticketType">
+		SELECT TYPE_ID, TYPE_NM, SORT_ORDER, USE_YN, REG_DT
+		FROM TICKET_TYPE
+		WHERE TYPE_ID = #{typeId}
+	</select>
+
+	<select id="selectTicketTypeList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT TYPE_ID, TYPE_NM, SORT_ORDER, USE_YN, REG_DT
+		FROM TICKET_TYPE
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND TYPE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND TYPE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY SORT_ORDER ASC, TYPE_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectTicketTypeListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM TICKET_TYPE
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND TYPE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND TYPE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectTicketTypeListAll" resultMap="ticketType">
+		SELECT TYPE_ID, TYPE_NM, SORT_ORDER, USE_YN, REG_DT
+		FROM TICKET_TYPE
+		WHERE USE_YN = 'Y'
+		ORDER BY SORT_ORDER ASC, TYPE_ID ASC
+	</select>
+
+	<select id="selectTicketTypeByName" parameterType="ticketTypeVO" resultType="int">
+		SELECT COUNT(*)
+		FROM TICKET_TYPE
+		WHERE TYPE_NM = #{typeNm}
+		<if test="typeId != null and typeId != ''">
+			AND TYPE_ID != #{typeId}
+		</if>
+	</select>
+
+</mapper>

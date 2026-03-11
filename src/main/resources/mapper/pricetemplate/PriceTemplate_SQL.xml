@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.pricetemplate.mapper.PriceTemplateMapper">
+
+	<!-- 회차 템플릿 조회 (프로그램+dayType) -->
+	<select id="selectSessionTemplates" parameterType="map" resultType="com.ftk.pricetemplate.vo.SessionTemplateVO">
+		SELECT
+			PROGRAM_ID AS programId
+		  , SESSION_NO AS sessionNo
+		  , DAY_TYPE AS dayType
+		  , EVENT_TIME AS eventTime
+		  , ENABLED AS enabled
+		FROM SESSION_TEMPLATE
+		WHERE PROGRAM_ID = #{programId}
+		  AND DAY_TYPE = #{dayType}
+		ORDER BY SESSION_NO
+	</select>
+
+	<!-- 가격 템플릿 조회 (프로그램+dayType) -->
+	<select id="selectPriceTemplates" parameterType="map" resultType="com.ftk.pricetemplate.vo.PriceTemplateVO">
+		SELECT
+			PT.PROGRAM_ID AS programId
+		  , PT.SESSION_NO AS sessionNo
+		  , PT.TYPE_ID AS typeId
+		  , TT.TYPE_NM AS typeNm
+		  , PT.DAY_TYPE AS dayType
+		  , PT.PRICE AS price
+		FROM PRICE_TEMPLATE PT
+		JOIN TICKET_TYPE TT ON PT.TYPE_ID = TT.TYPE_ID
+		LEFT JOIN PROGRAM_TICKET_TYPE PTT ON PT.PROGRAM_ID = PTT.PROGRAM_ID AND PT.TYPE_ID = PTT.TYPE_ID
+		WHERE PT.PROGRAM_ID = #{programId}
+		  AND PT.DAY_TYPE = #{dayType}
+		ORDER BY PT.SESSION_NO, PTT.SORT_ORDER
+	</select>
+
+	<!-- 가격 템플릿 단건 수정 -->
+	<update id="updatePriceTemplate" parameterType="com.ftk.pricetemplate.vo.PriceTemplateVO">
+		UPDATE PRICE_TEMPLATE
+		SET PRICE = #{price}
+		WHERE PROGRAM_ID = #{programId}
+		  AND SESSION_NO = #{sessionNo}
+		  AND TYPE_ID = #{typeId}
+		  AND DAY_TYPE = #{dayType}
+	</update>
+
+	<!-- 회차 활성/비활성 수정 -->
+	<update id="updateSessionTemplateEnabled" parameterType="com.ftk.pricetemplate.vo.SessionTemplateVO">
+		UPDATE SESSION_TEMPLATE
+		SET ENABLED = #{enabled}
+		WHERE PROGRAM_ID = #{programId}
+		  AND SESSION_NO = #{sessionNo}
+		  AND DAY_TYPE = #{dayType}
+	</update>
+
+	<!-- 일괄 가격 조정: WEEKDAY 기준으로 adjustAmount를 더한 값으로 업데이트 -->
+	<update id="updatePriceTemplateBulk" parameterType="map">
+		UPDATE PT
+		SET PT.PRICE = WEEKDAY_PT.PRICE + #{adjustAmount}
+		FROM PRICE_TEMPLATE PT
+		INNER JOIN PRICE_TEMPLATE WEEKDAY_PT
+			ON PT.PROGRAM_ID = WEEKDAY_PT.PROGRAM_ID
+		   AND PT.SESSION_NO = WEEKDAY_PT.SESSION_NO
+		   AND PT.TYPE_ID = WEEKDAY_PT.TYPE_ID
+		   AND WEEKDAY_PT.DAY_TYPE = 'WEEKDAY'
+		WHERE PT.PROGRAM_ID = #{programId}
+		  AND PT.DAY_TYPE = #{dayType}
+	</update>
+
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.venue.mapper.VenueMapper">
+
+	<resultMap id="venue" type="com.ftk.venue.vo.VenueVO">
+		<result property="venueId"     column="VENUE_ID"/>
+		<result property="venueNm"     column="VENUE_NM"/>
+		<result property="location"    column="LOCATION"/>
+		<result property="totalSeats"  column="TOTAL_SEATS"/>
+		<result property="seatType"    column="SEAT_TYPE"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="useYn"       column="USE_YN"/>
+		<result property="regUser"     column="REG_USER"/>
+		<result property="regDt"       column="REG_DT"/>
+	</resultMap>
+
+	<insert id="insertVenue" parameterType="venueVO">
+		INSERT INTO VENUE
+			( VENUE_ID
+			, VENUE_NM
+			, LOCATION
+			, TOTAL_SEATS
+			, SEAT_TYPE
+			, DESCRIPTION
+			, USE_YN
+			, REG_USER
+			, REG_DT )
+		VALUES
+			( #{venueId}
+			, #{venueNm}
+			, #{location}
+			, #{totalSeats}
+			, #{seatType}
+			, #{description}
+			, #{useYn}
+			, #{regUser}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateVenue" parameterType="venueVO">
+		UPDATE VENUE
+		SET VENUE_NM    = #{venueNm}
+		  , LOCATION    = #{location}
+		  , TOTAL_SEATS = #{totalSeats}
+		  , SEAT_TYPE   = #{seatType}
+		  , DESCRIPTION = #{description}
+		  , USE_YN      = #{useYn}
+		WHERE VENUE_ID = #{venueId}
+	</update>
+
+	<delete id="deleteVenue" parameterType="venueVO">
+		DELETE FROM VENUE
+		WHERE VENUE_ID = #{venueId}
+	</delete>
+
+	<select id="selectVenue" parameterType="venueVO" resultMap="venue">
+		SELECT
+			VENUE_ID, VENUE_NM, LOCATION, TOTAL_SEATS, SEAT_TYPE,
+			DESCRIPTION, USE_YN, REG_USER, REG_DT
+		FROM VENUE
+		WHERE VENUE_ID = #{venueId}
+	</select>
+
+	<select id="selectVenueList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			VENUE_ID, VENUE_NM, LOCATION, TOTAL_SEATS, SEAT_TYPE,
+			DESCRIPTION, USE_YN, REG_USER, REG_DT
+		FROM VENUE
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND VENUE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND VENUE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY VENUE_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectVenueListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM VENUE
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND VENUE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND VENUE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+</mapper>

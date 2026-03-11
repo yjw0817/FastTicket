@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.role.mapper.RoleMapper">
+
+	<resultMap id="role" type="com.ftk.role.vo.RoleVO">
+		<result property="roleId"      column="ROLE_ID"/>
+		<result property="roleNm"      column="ROLE_NM"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="useYn"       column="USE_YN"/>
+		<result property="regDt"       column="REG_DT"/>
+	</resultMap>
+
+	<insert id="insertRole" parameterType="roleVO">
+		INSERT INTO ROLE
+			( ROLE_ID
+			, ROLE_NM
+			, DESCRIPTION
+			, USE_YN
+			, REG_DT )
+		VALUES
+			( #{roleId}
+			, #{roleNm}
+			, #{description}
+			, #{useYn}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateRole" parameterType="roleVO">
+		UPDATE ROLE
+		SET ROLE_NM     = #{roleNm}
+		  , DESCRIPTION = #{description}
+		  , USE_YN      = #{useYn}
+		WHERE ROLE_ID = #{roleId}
+	</update>
+
+	<delete id="deleteRole" parameterType="roleVO">
+		DELETE FROM ROLE
+		WHERE ROLE_ID = #{roleId}
+	</delete>
+
+	<select id="selectRole" parameterType="roleVO" resultMap="role">
+		SELECT
+			ROLE_ID, ROLE_NM, DESCRIPTION, USE_YN, REG_DT
+		FROM ROLE
+		WHERE ROLE_ID = #{roleId}
+	</select>
+
+	<select id="selectRoleList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			ROLE_ID, ROLE_NM, DESCRIPTION, USE_YN, REG_DT
+		FROM ROLE
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND ROLE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND ROLE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY ROLE_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectRoleListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM ROLE
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND ROLE_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND ROLE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+</mapper>

@@ -1,0 +1,36 @@
+# Build
+target/
+*.class
+*.war
+*.jar
+
+# IDE
+.project
+.classpath
+.settings/
+*.iml
+.idea/
+.factorypath
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+
+# Playwright CLI / MCP artifacts
+.playwright-cli/
+.playwright-mcp/
+.omc/
+
+# Claude
+.claude/
+
+# Screenshots (root)
+*.png
+
+# Temp files
+test*.yml
+CodingRequest/
+Error/

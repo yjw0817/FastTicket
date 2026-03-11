@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.menu.mapper.MenuMapper">
+
+	<resultMap id="menu" type="com.ftk.menu.vo.MenuVO">
+		<result property="menuId"      column="MENU_ID"/>
+		<result property="menuNm"      column="MENU_NM"/>
+		<result property="menuUrl"     column="MENU_URL"/>
+		<result property="icon"        column="ICON"/>
+		<result property="parentId"    column="PARENT_ID"/>
+		<result property="sortOrder"   column="SORT_ORDER"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="useYn"       column="USE_YN"/>
+		<result property="regDt"       column="REG_DT"/>
+	</resultMap>
+
+	<insert id="insertMenu" parameterType="menuVO">
+		INSERT INTO MENU
+			( MENU_ID
+			, MENU_NM
+			, MENU_URL
+			, ICON
+			, PARENT_ID
+			, SORT_ORDER
+			, DESCRIPTION
+			, USE_YN
+			, REG_DT )
+		VALUES
+			( #{menuId}
+			, #{menuNm}
+			, #{menuUrl}
+			, #{icon}
+			, #{parentId}
+			, #{sortOrder}
+			, #{description}
+			, #{useYn}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateMenu" parameterType="menuVO">
+		UPDATE MENU
+		SET MENU_NM     = #{menuNm}
+		  , MENU_URL    = #{menuUrl}
+		  , ICON        = #{icon}
+		  , PARENT_ID   = #{parentId}
+		  , SORT_ORDER  = #{sortOrder}
+		  , DESCRIPTION = #{description}
+		  , USE_YN      = #{useYn}
+		WHERE MENU_ID = #{menuId}
+	</update>
+
+	<delete id="deleteMenu" parameterType="menuVO">
+		DELETE FROM MENU
+		WHERE MENU_ID = #{menuId}
+	</delete>
+
+	<select id="selectMenu" parameterType="menuVO" resultMap="menu">
+		SELECT
+			MENU_ID, MENU_NM, MENU_URL, ICON, PARENT_ID, SORT_ORDER,
+			DESCRIPTION, USE_YN, REG_DT
+		FROM MENU
+		WHERE MENU_ID = #{menuId}
+	</select>
+
+	<select id="selectMenuList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			A.MENU_ID, A.MENU_NM, A.MENU_URL, A.ICON, A.PARENT_ID, A.SORT_ORDER,
+			A.DESCRIPTION, A.USE_YN, A.REG_DT,
+			B.MENU_NM AS PARENT_NM
+		FROM MENU A
+		LEFT JOIN MENU B ON A.PARENT_ID = B.MENU_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND A.MENU_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND A.MENU_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY A.SORT_ORDER ASC, A.MENU_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectMenuListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM MENU A
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND A.MENU_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND A.MENU_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectParentMenuList" resultType="egovMap">
+		SELECT MENU_ID, MENU_NM
+		FROM MENU
+		WHERE USE_YN = 'Y'
+		ORDER BY SORT_ORDER ASC, MENU_ID ASC
+	</select>
+
+	<select id="selectAllMenuList" resultMap="menu">
+		SELECT
+			MENU_ID, MENU_NM, MENU_URL, ICON, PARENT_ID, SORT_ORDER,
+			DESCRIPTION, USE_YN,
+			CONVERT(VARCHAR(19), REG_DT, 120) AS REG_DT
+		FROM MENU
+		ORDER BY SORT_ORDER ASC, MENU_ID ASC
+	</select>
+
+	<select id="selectMenuListByMemberId" parameterType="string" resultMap="menu">
+		SELECT DISTINCT
+			M.MENU_ID, M.MENU_NM, M.MENU_URL, M.ICON, M.PARENT_ID, M.SORT_ORDER,
+			M.DESCRIPTION, M.USE_YN,
+			CONVERT(VARCHAR(19), M.REG_DT, 120) AS REG_DT
+		FROM MENU M
+		WHERE M.USE_YN = 'Y'
+		AND (
+			M.MENU_ID IN (
+				SELECT RM.MENU_ID
+				FROM ROLE_MENU RM
+				INNER JOIN USER_ROLE UR ON RM.ROLE_ID = UR.ROLE_ID
+				WHERE UR.MEMBER_ID = #{memberId}
+			)
+			OR M.MENU_ID IN (
+				SELECT M2.PARENT_ID
+				FROM MENU M2
+				INNER JOIN ROLE_MENU RM ON M2.MENU_ID = RM.MENU_ID
+				INNER JOIN USER_ROLE UR ON RM.ROLE_ID = UR.ROLE_ID
+				WHERE UR.MEMBER_ID = #{memberId}
+				AND M2.PARENT_ID IS NOT NULL
+			)
+		)
+		ORDER BY M.SORT_ORDER ASC, M.MENU_ID ASC
+	</select>
+
+</mapper>

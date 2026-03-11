@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.program.mapper.ProgramMapper">
+
+	<insert id="insertProgram" parameterType="programVO">
+		INSERT INTO PROGRAM
+			( PROGRAM_ID
+			, PROGRAM_NM
+			, PROGRAM_TYPE
+			, VENUE_ID
+			, DESCRIPTION
+			, AGE_LIMIT
+			, RUNNING_TIME
+			, POSTER_IMG
+			, START_DATE
+			, END_DATE
+			, OPEN_TIME
+			, CLOSE_TIME
+			, SESSION_COUNT
+			, FIRST_SESSION_TIME
+			, SESSION_INTERVAL
+			, DEFAULT_ONLINE_CAP
+			, DEFAULT_OFFLINE_CAP
+			, USE_YN
+			, REG_USER
+			, REG_DT )
+		VALUES
+			( #{programId}
+			, #{programNm}
+			, #{programType}
+			, #{venueId}
+			, #{description}
+			, #{ageLimit}
+			, #{runningTime}
+			, #{posterImg}
+			, #{startDate, jdbcType=DATE}
+			, #{endDate, jdbcType=DATE}
+			, <choose><when test="openTime != null and openTime != ''">#{openTime}</when><otherwise>NULL</otherwise></choose>
+			, <choose><when test="closeTime != null and closeTime != ''">#{closeTime}</when><otherwise>NULL</otherwise></choose>
+			, #{sessionCount, jdbcType=INTEGER}
+			, <choose><when test="firstSessionTime != null and firstSessionTime != ''">#{firstSessionTime}</when><otherwise>NULL</otherwise></choose>
+			, #{sessionInterval, jdbcType=INTEGER}
+			, #{defaultOnlineCap, jdbcType=INTEGER}
+			, #{defaultOfflineCap, jdbcType=INTEGER}
+			, #{useYn}
+			, #{regUser}
+			, GETDATE() )
+	</insert>
+
+	<update id="updateProgram" parameterType="programVO">
+		UPDATE PROGRAM
+		SET PROGRAM_NM   = #{programNm}
+		  , PROGRAM_TYPE = #{programType}
+		  , VENUE_ID     = #{venueId}
+		  , DESCRIPTION  = #{description}
+		  , AGE_LIMIT    = #{ageLimit}
+		  , RUNNING_TIME = #{runningTime}
+		  , POSTER_IMG   = #{posterImg}
+		  , START_DATE   = #{startDate, jdbcType=DATE}
+		  , END_DATE     = #{endDate, jdbcType=DATE}
+		  , OPEN_TIME    = <choose><when test="openTime != null and openTime != ''">#{openTime}</when><otherwise>NULL</otherwise></choose>
+		  , CLOSE_TIME   = <choose><when test="closeTime != null and closeTime != ''">#{closeTime}</when><otherwise>NULL</otherwise></choose>
+		  , SESSION_COUNT      = #{sessionCount, jdbcType=INTEGER}
+		  , FIRST_SESSION_TIME = <choose><when test="firstSessionTime != null and firstSessionTime != ''">#{firstSessionTime}</when><otherwise>NULL</otherwise></choose>
+		  , SESSION_INTERVAL   = #{sessionInterval, jdbcType=INTEGER}
+		  , DEFAULT_ONLINE_CAP = #{defaultOnlineCap, jdbcType=INTEGER}
+		  , DEFAULT_OFFLINE_CAP = #{defaultOfflineCap, jdbcType=INTEGER}
+		  , USE_YN       = #{useYn}
+		  , REG_USER     = #{regUser}
+		WHERE PROGRAM_ID = #{programId}
+	</update>
+
+	<delete id="deleteProgram" parameterType="programVO">
+		DELETE FROM PROGRAM
+		WHERE PROGRAM_ID = #{programId}
+	</delete>
+
+	<select id="selectProgram" parameterType="programVO" resultType="programVO">
+		SELECT
+			P.PROGRAM_ID AS programId
+		  , P.PROGRAM_NM AS programNm
+		  , P.PROGRAM_TYPE AS programType
+		  , P.VENUE_ID AS venueId
+		  , P.DESCRIPTION AS description
+		  , P.AGE_LIMIT AS ageLimit
+		  , P.RUNNING_TIME AS runningTime
+		  , P.POSTER_IMG AS posterImg
+		  , CONVERT(VARCHAR(10), P.START_DATE, 23) AS startDate
+		  , CONVERT(VARCHAR(10), P.END_DATE, 23) AS endDate
+		  , P.OPEN_TIME AS openTime
+		  , P.CLOSE_TIME AS closeTime
+		  , P.SESSION_COUNT AS sessionCount
+		  , P.FIRST_SESSION_TIME AS firstSessionTime
+		  , P.SESSION_INTERVAL AS sessionInterval
+		  , P.DEFAULT_ONLINE_CAP AS defaultOnlineCap
+		  , P.DEFAULT_OFFLINE_CAP AS defaultOfflineCap
+		  , P.USE_YN AS useYn
+		  , P.REG_USER AS regUser
+		  , CONVERT(VARCHAR(19), P.REG_DT, 120) AS regDt
+		  , V.VENUE_NM AS venueNm
+		FROM PROGRAM P
+		LEFT JOIN VENUE V ON P.VENUE_ID = V.VENUE_ID
+		WHERE P.PROGRAM_ID = #{programId}
+	</select>
+
+	<select id="selectProgramList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			P.PROGRAM_ID
+		  , P.PROGRAM_NM
+		  , P.PROGRAM_TYPE
+		  , P.VENUE_ID
+		  , P.USE_YN
+		  , CONVERT(VARCHAR(10), P.START_DATE, 23) AS START_DATE
+		  , CONVERT(VARCHAR(10), P.END_DATE, 23) AS END_DATE
+		  , V.VENUE_NM
+		FROM PROGRAM P
+		LEFT JOIN VENUE V ON P.VENUE_ID = V.VENUE_ID
+		WHERE 1=1
+		<if test="searchCondition2 != null and searchCondition2 != ''">
+			AND P.PROGRAM_TYPE = #{searchCondition2}
+		</if>
+		<if test="searchCondition3 != null and searchCondition3 != ''">
+			AND P.VENUE_ID = #{searchCondition3}
+		</if>
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND P.PROGRAM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND P.PROGRAM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 2">
+					AND V.VENUE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY P.PROGRAM_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectProgramListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*)
+		FROM PROGRAM P
+		LEFT JOIN VENUE V ON P.VENUE_ID = V.VENUE_ID
+		WHERE 1=1
+		<if test="searchCondition2 != null and searchCondition2 != ''">
+			AND P.PROGRAM_TYPE = #{searchCondition2}
+		</if>
+		<if test="searchCondition3 != null and searchCondition3 != ''">
+			AND P.VENUE_ID = #{searchCondition3}
+		</if>
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND P.PROGRAM_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND P.PROGRAM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 2">
+					AND V.VENUE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectProgramListAll" resultType="egovMap">
+		SELECT
+			PROGRAM_ID
+		  , PROGRAM_NM
+		  , VENUE_ID
+		FROM PROGRAM
+		WHERE USE_YN = 'Y'
+		ORDER BY PROGRAM_NM ASC
+	</select>
+
+	<select id="selectProgramListAllByType" parameterType="string" resultType="egovMap">
+		SELECT
+			PROGRAM_ID
+		  , PROGRAM_NM
+		  , VENUE_ID
+		FROM PROGRAM
+		WHERE USE_YN = 'Y'
+		  AND PROGRAM_TYPE = #{programType}
+		ORDER BY PROGRAM_NM ASC
+	</select>
+
+	<!-- PROGRAM_TICKET_TYPE 매핑 (기본가격 포함) -->
+	<insert id="insertProgramTicketType" parameterType="programTicketTypeVO">
+		INSERT INTO PROGRAM_TICKET_TYPE (PROGRAM_ID, TYPE_ID, BASE_PRICE, SAT_PRICE, SUN_PRICE, HOL_PRICE, SORT_ORDER)
+		VALUES (#{programId}, #{typeId}, #{basePrice}, #{satPrice}, #{sunPrice}, #{holPrice}, #{sortOrder})
+	</insert>
+
+	<delete id="deleteProgramTicketTypes" parameterType="string">
+		DELETE FROM PROGRAM_TICKET_TYPE WHERE PROGRAM_ID = #{programId}
+	</delete>
+
+	<select id="selectProgramTicketTypeIds" parameterType="string" resultType="string">
+		SELECT TYPE_ID FROM PROGRAM_TICKET_TYPE WHERE PROGRAM_ID = #{programId} ORDER BY SORT_ORDER
+	</select>
+
+	<select id="selectProgramTicketTypes" parameterType="string" resultType="programTicketTypeVO">
+		SELECT
+			PTT.PROGRAM_ID AS programId
+		  , PTT.TYPE_ID AS typeId
+		  , TT.TYPE_NM AS typeNm
+		  , PTT.BASE_PRICE AS basePrice
+		  , PTT.SAT_PRICE AS satPrice
+		  , PTT.SUN_PRICE AS sunPrice
+		  , PTT.HOL_PRICE AS holPrice
+		  , PTT.SORT_ORDER AS sortOrder
+		FROM PROGRAM_TICKET_TYPE PTT
+		JOIN TICKET_TYPE TT ON PTT.TYPE_ID = TT.TYPE_ID
+		WHERE PTT.PROGRAM_ID = #{programId}
+		ORDER BY PTT.SORT_ORDER
+	</select>
+
+	<!-- PROGRAM_DISCOUNT -->
+	<insert id="insertProgramDiscount" parameterType="programDiscountVO">
+		INSERT INTO PROGRAM_DISCOUNT
+			(PD_ID, PROGRAM_ID, DISCOUNT_NM, DISCOUNT_TYPE, DISCOUNT_VALUE,
+			 VERIFY_REQUIRED, VERIFY_ITEM, ROUNDING_UNIT, ROUNDING_TYPE, USE_YN, SORT_ORDER, REG_DT)
+		VALUES
+			(#{pdId}, #{programId}, #{discountNm}, #{discountType}, #{discountValue},
+			 #{verifyRequired}, #{verifyItem}, #{roundingUnit}, #{roundingType}, #{useYn}, #{sortOrder}, GETDATE())
+	</insert>
+
+	<delete id="deleteProgramDiscounts" parameterType="string">
+		DELETE FROM PROGRAM_DISCOUNT WHERE PROGRAM_ID = #{programId}
+	</delete>
+
+	<select id="selectProgramDiscounts" parameterType="string" resultType="programDiscountVO">
+		SELECT
+			PD_ID AS pdId
+		  , PROGRAM_ID AS programId
+		  , DISCOUNT_NM AS discountNm
+		  , DISCOUNT_TYPE AS discountType
+		  , DISCOUNT_VALUE AS discountValue
+		  , VERIFY_REQUIRED AS verifyRequired
+		  , VERIFY_ITEM AS verifyItem
+		  , ROUNDING_UNIT AS roundingUnit
+		  , ROUNDING_TYPE AS roundingType
+		  , USE_YN AS useYn
+		  , SORT_ORDER AS sortOrder
+		  , CONVERT(VARCHAR(19), REG_DT, 120) AS regDt
+		FROM PROGRAM_DISCOUNT
+		WHERE PROGRAM_ID = #{programId}
+		ORDER BY SORT_ORDER
+	</select>
+
+	<!-- SESSION_TEMPLATE -->
+	<insert id="insertSessionTemplate" parameterType="map">
+		INSERT INTO SESSION_TEMPLATE (PROGRAM_ID, SESSION_NO, DAY_TYPE, EVENT_TIME, ENABLED, ONLINE_CAP, OFFLINE_CAP)
+		VALUES (#{programId}, #{sessionNo}, #{dayType}, #{eventTime}, #{enabled}, #{onlineCap}, #{offlineCap})
+	</insert>
+
+	<delete id="deleteSessionTemplates" parameterType="string">
+		DELETE FROM SESSION_TEMPLATE WHERE PROGRAM_ID = #{programId}
+	</delete>
+
+	<!-- PRICE_TEMPLATE -->
+	<insert id="insertPriceTemplate" parameterType="map">
+		INSERT INTO PRICE_TEMPLATE (PROGRAM_ID, SESSION_NO, TYPE_ID, DAY_TYPE, PRICE)
+		VALUES (#{programId}, #{sessionNo}, #{typeId}, #{dayType}, #{price})
+	</insert>
+
+	<delete id="deletePriceTemplates" parameterType="string">
+		DELETE FROM PRICE_TEMPLATE WHERE PROGRAM_ID = #{programId}
+	</delete>
+
+	<select id="selectSessionTemplates" parameterType="string" resultType="hashmap">
+		SELECT SESSION_NO AS sessionNo, DAY_TYPE AS dayType, EVENT_TIME AS eventTime, ENABLED AS enabled,
+		       ISNULL(ONLINE_CAP, 0) AS onlineCap, ISNULL(OFFLINE_CAP, 0) AS offlineCap
+		FROM SESSION_TEMPLATE
+		WHERE PROGRAM_ID = #{programId}
+		ORDER BY DAY_TYPE, SESSION_NO
+	</select>
+
+	<select id="selectPriceTemplates" parameterType="string" resultType="hashmap">
+		SELECT SESSION_NO AS sessionNo, TYPE_ID AS typeId, DAY_TYPE AS dayType, PRICE AS price
+		FROM PRICE_TEMPLATE
+		WHERE PROGRAM_ID = #{programId}
+		ORDER BY DAY_TYPE, SESSION_NO, TYPE_ID
+	</select>
+
+</mapper>

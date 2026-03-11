@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.userrole.mapper.UserRoleMapper">
+
+	<insert id="insertUserRole" parameterType="userRoleVO">
+		INSERT INTO USER_ROLE
+			( MEMBER_ID
+			, ROLE_ID
+			, REG_DT )
+		VALUES
+			( #{memberId}
+			, #{roleId}
+			, GETDATE() )
+	</insert>
+
+	<delete id="deleteUserRole" parameterType="userRoleVO">
+		DELETE FROM USER_ROLE
+		WHERE MEMBER_ID = #{memberId}
+		  AND ROLE_ID   = #{roleId}
+	</delete>
+
+	<select id="selectUserRoleList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT
+			UR.MEMBER_ID,
+			M.MEMBER_NM,
+			UR.ROLE_ID,
+			R.ROLE_NM,
+			UR.REG_DT
+		FROM USER_ROLE UR
+		INNER JOIN MEMBER M ON UR.MEMBER_ID = M.MEMBER_ID
+		INNER JOIN ROLE R   ON UR.ROLE_ID   = R.ROLE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND UR.MEMBER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND M.MEMBER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY UR.MEMBER_ID ASC, UR.ROLE_ID ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectUserRoleListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) totcnt
+		FROM USER_ROLE UR
+		INNER JOIN MEMBER M ON UR.MEMBER_ID = M.MEMBER_ID
+		INNER JOIN ROLE R   ON UR.ROLE_ID   = R.ROLE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<choose>
+				<when test="searchCondition == 0">
+					AND UR.MEMBER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+				<when test="searchCondition == 1">
+					AND M.MEMBER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectRolesByMember" parameterType="string" resultType="egovMap">
+		SELECT
+			UR.MEMBER_ID,
+			UR.ROLE_ID,
+			R.ROLE_NM,
+			UR.REG_DT
+		FROM USER_ROLE UR
+		INNER JOIN ROLE R ON UR.ROLE_ID = R.ROLE_ID
+		WHERE UR.MEMBER_ID = #{memberId}
+		ORDER BY UR.ROLE_ID ASC
+	</select>
+
+	<!-- 드롭다운용: 전체 회원 목록 -->
+	<select id="selectAllMembers" resultType="egovMap">
+		SELECT MEMBER_ID, MEMBER_NM
+		FROM MEMBER
+		WHERE USE_YN = 'Y'
+		ORDER BY MEMBER_ID ASC
+	</select>
+
+	<!-- 드롭다운용: 전체 활성 권한 목록 -->
+	<select id="selectAllRoles" resultType="egovMap">
+		SELECT ROLE_ID, ROLE_NM
+		FROM ROLE
+		WHERE USE_YN = 'Y'
+		ORDER BY ROLE_ID ASC
+	</select>
+
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.holiday.mapper.HolidayMapper">
+
+	<insert id="insertHoliday" parameterType="holidayVO">
+		INSERT INTO HOLIDAY (HOLIDAY_ID, HOLIDAY_DATE, HOLIDAY_NM, USE_YN, REG_DT)
+		VALUES (#{holidayId}, #{holidayDate}, #{holidayNm}, #{useYn}, GETDATE())
+	</insert>
+
+	<update id="updateHoliday" parameterType="holidayVO">
+		UPDATE HOLIDAY
+		SET HOLIDAY_DATE = #{holidayDate}, HOLIDAY_NM = #{holidayNm}, USE_YN = #{useYn}
+		WHERE HOLIDAY_ID = #{holidayId}
+	</update>
+
+	<delete id="deleteHoliday" parameterType="holidayVO">
+		DELETE FROM HOLIDAY WHERE HOLIDAY_ID = #{holidayId}
+	</delete>
+
+	<select id="selectHoliday" parameterType="holidayVO" resultType="holidayVO">
+		SELECT HOLIDAY_ID AS holidayId,
+		       CONVERT(VARCHAR(10), HOLIDAY_DATE, 23) AS holidayDate,
+		       HOLIDAY_NM AS holidayNm,
+		       USE_YN AS useYn,
+		       CONVERT(VARCHAR(19), REG_DT, 120) AS regDt
+		FROM HOLIDAY
+		WHERE HOLIDAY_ID = #{holidayId}
+	</select>
+
+	<select id="selectHolidayList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT HOLIDAY_ID,
+		       CONVERT(VARCHAR(10), HOLIDAY_DATE, 23) AS HOLIDAY_DATE,
+		       HOLIDAY_NM,
+		       USE_YN,
+		       CONVERT(VARCHAR(19), REG_DT, 120) AS REG_DT
+		FROM HOLIDAY
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			AND HOLIDAY_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+		ORDER BY HOLIDAY_DATE ASC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectHolidayListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) FROM HOLIDAY
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			AND HOLIDAY_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+	</select>
+
+	<select id="selectHolidayDatesBetween" parameterType="holidayVO" resultType="string">
+		SELECT CONVERT(VARCHAR(10), HOLIDAY_DATE, 23)
+		FROM HOLIDAY
+		WHERE USE_YN = 'Y'
+		  AND HOLIDAY_DATE BETWEEN #{searchCondition} AND #{searchKeyword}
+		ORDER BY HOLIDAY_DATE ASC
+	</select>
+
+</mapper>

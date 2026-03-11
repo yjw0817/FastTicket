@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.businesshours.mapper.BusinessHoursMapper">
+
+	<select id="selectBusinessHoursList" resultType="businessHoursVO">
+		SELECT BH_ID       AS bhId,
+		       DAY_OF_WEEK AS dayOfWeek,
+		       OPEN_TIME   AS openTime,
+		       CLOSE_TIME  AS closeTime,
+		       USE_YN      AS useYn,
+		       CONVERT(VARCHAR(19), REG_DT, 120) AS regDt
+		FROM BUSINESS_HOURS
+		ORDER BY DAY_OF_WEEK ASC
+	</select>
+
+	<select id="selectBusinessHours" parameterType="businessHoursVO" resultType="businessHoursVO">
+		SELECT BH_ID       AS bhId,
+		       DAY_OF_WEEK AS dayOfWeek,
+		       OPEN_TIME   AS openTime,
+		       CLOSE_TIME  AS closeTime,
+		       USE_YN      AS useYn
+		FROM BUSINESS_HOURS
+		WHERE BH_ID = #{bhId}
+	</select>
+
+	<select id="selectBusinessHoursCount" resultType="int">
+		SELECT COUNT(*) FROM BUSINESS_HOURS
+	</select>
+
+	<insert id="insertBusinessHours" parameterType="businessHoursVO">
+		INSERT INTO BUSINESS_HOURS (BH_ID, DAY_OF_WEEK, OPEN_TIME, CLOSE_TIME, USE_YN, REG_DT)
+		VALUES (#{bhId}, #{dayOfWeek}, #{openTime}, #{closeTime}, #{useYn}, GETDATE())
+	</insert>
+
+	<update id="updateBusinessHours" parameterType="businessHoursVO">
+		UPDATE BUSINESS_HOURS
+		SET OPEN_TIME  = #{openTime},
+		    CLOSE_TIME = #{closeTime},
+		    USE_YN     = #{useYn}
+		WHERE BH_ID = #{bhId}
+	</update>
+
+</mapper>

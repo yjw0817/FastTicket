@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.discount.mapper.DiscountMapper">
+
+	<insert id="insertDiscount" parameterType="discountVO">
+		INSERT INTO DISCOUNT (DISCOUNT_ID, DISCOUNT_NM, DISCOUNT_TYPE, DISCOUNT_VALUE,
+		                      START_DATE, END_DATE,
+		                      APPLY_TIME_FROM, APPLY_TIME_TO, APPLY_DAYS, APPLY_TICKET_TYPE_ID,
+		                      ROUNDING_UNIT, ROUNDING_TYPE,
+		                      USE_YN, REMARK, REG_DT)
+		VALUES (#{discountId}, #{discountNm}, #{discountType}, #{discountValue},
+		        <choose><when test="startDate != null and startDate != ''">#{startDate}</when><otherwise>NULL</otherwise></choose>,
+		        <choose><when test="endDate != null and endDate != ''">#{endDate}</when><otherwise>NULL</otherwise></choose>,
+		        <choose><when test="applyTimeFrom != null and applyTimeFrom != ''">#{applyTimeFrom}</when><otherwise>NULL</otherwise></choose>,
+		        <choose><when test="applyTimeTo != null and applyTimeTo != ''">#{applyTimeTo}</when><otherwise>NULL</otherwise></choose>,
+		        <choose><when test="applyDays != null and applyDays != ''">#{applyDays}</when><otherwise>NULL</otherwise></choose>,
+		        <choose><when test="applyTicketTypeId != null and applyTicketTypeId != ''">#{applyTicketTypeId}</when><otherwise>NULL</otherwise></choose>,
+		        #{roundingUnit}, #{roundingType},
+		        #{useYn}, #{remark}, GETDATE())
+	</insert>
+
+	<update id="updateDiscount" parameterType="discountVO">
+		UPDATE DISCOUNT
+		SET DISCOUNT_NM    = #{discountNm},
+		    DISCOUNT_TYPE  = #{discountType},
+		    DISCOUNT_VALUE = #{discountValue},
+		    START_DATE     = <choose><when test="startDate != null and startDate != ''">#{startDate}</when><otherwise>NULL</otherwise></choose>,
+		    END_DATE       = <choose><when test="endDate != null and endDate != ''">#{endDate}</when><otherwise>NULL</otherwise></choose>,
+		    APPLY_TIME_FROM = <choose><when test="applyTimeFrom != null and applyTimeFrom != ''">#{applyTimeFrom}</when><otherwise>NULL</otherwise></choose>,
+		    APPLY_TIME_TO   = <choose><when test="applyTimeTo != null and applyTimeTo != ''">#{applyTimeTo}</when><otherwise>NULL</otherwise></choose>,
+		    APPLY_DAYS      = <choose><when test="applyDays != null and applyDays != ''">#{applyDays}</when><otherwise>NULL</otherwise></choose>,
+		    APPLY_TICKET_TYPE_ID = <choose><when test="applyTicketTypeId != null and applyTicketTypeId != ''">#{applyTicketTypeId}</when><otherwise>NULL</otherwise></choose>,
+		    ROUNDING_UNIT  = #{roundingUnit},
+		    ROUNDING_TYPE  = #{roundingType},
+		    USE_YN         = #{useYn},
+		    REMARK         = #{remark}
+		WHERE DISCOUNT_ID = #{discountId}
+	</update>
+
+	<delete id="deleteDiscount" parameterType="discountVO">
+		DELETE FROM DISCOUNT_PROGRAM WHERE DISCOUNT_ID = #{discountId};
+		DELETE FROM DISCOUNT WHERE DISCOUNT_ID = #{discountId}
+	</delete>
+
+	<select id="selectDiscount" parameterType="discountVO" resultType="discountVO">
+		SELECT D.DISCOUNT_ID     AS discountId,
+		       D.DISCOUNT_NM     AS discountNm,
+		       D.DISCOUNT_TYPE   AS discountType,
+		       D.DISCOUNT_VALUE  AS discountValue,
+		       CONVERT(VARCHAR(10), D.START_DATE, 23) AS startDate,
+		       CONVERT(VARCHAR(10), D.END_DATE, 23)   AS endDate,
+		       D.APPLY_TIME_FROM AS applyTimeFrom,
+		       D.APPLY_TIME_TO   AS applyTimeTo,
+		       D.APPLY_DAYS      AS applyDays,
+		       D.APPLY_TICKET_TYPE_ID AS applyTicketTypeId,
+		       ISNULL(D.ROUNDING_UNIT, 1) AS roundingUnit,
+		       ISNULL(D.ROUNDING_TYPE, 'ROUND') AS roundingType,
+		       D.USE_YN          AS useYn,
+		       D.REMARK          AS remark,
+		       CONVERT(VARCHAR(19), D.REG_DT, 120) AS regDt
+		FROM DISCOUNT D
+		WHERE D.DISCOUNT_ID = #{discountId}
+	</select>
+
+	<select id="selectDiscountList" parameterType="commonDefaultVO" resultType="egovMap">
+		SELECT D.DISCOUNT_ID,
+		       D.DISCOUNT_NM,
+		       D.DISCOUNT_TYPE,
+		       D.DISCOUNT_VALUE,
+		       CONVERT(VARCHAR(10), D.START_DATE, 23) AS START_DATE,
+		       CONVERT(VARCHAR(10), D.END_DATE, 23)   AS END_DATE,
+		       D.APPLY_TIME_FROM,
+		       D.APPLY_TIME_TO,
+		       D.APPLY_DAYS,
+		       D.APPLY_TICKET_TYPE_ID,
+		       ISNULL(D.ROUNDING_UNIT, 1) AS ROUNDING_UNIT,
+		       ISNULL(D.ROUNDING_TYPE, 'ROUND') AS ROUNDING_TYPE,
+		       T.TYPE_NM AS APPLY_TICKET_TYPE_NM,
+		       (SELECT STRING_AGG(P.PROGRAM_NM + CASE WHEN DP.DISCOUNT_VALUE IS NOT NULL THEN '(' + CAST(DP.DISCOUNT_VALUE AS VARCHAR) + ')' ELSE '' END, ', ')
+		        FROM DISCOUNT_PROGRAM DP
+		        JOIN PROGRAM P ON DP.PROGRAM_ID = P.PROGRAM_ID
+		        WHERE DP.DISCOUNT_ID = D.DISCOUNT_ID) AS APPLY_PROGRAM_NMS,
+		       D.USE_YN,
+		       D.REMARK,
+		       CONVERT(VARCHAR(19), D.REG_DT, 120) AS REG_DT
+		FROM DISCOUNT D
+		LEFT JOIN TICKET_TYPE T ON D.APPLY_TICKET_TYPE_ID = T.TYPE_ID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			AND D.DISCOUNT_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+		ORDER BY D.REG_DT DESC
+		OFFSET #{firstIndex} ROWS FETCH NEXT #{recordCountPerPage} ROWS ONLY
+	</select>
+
+	<select id="selectDiscountListTotCnt" parameterType="commonDefaultVO" resultType="int">
+		SELECT COUNT(*) FROM DISCOUNT
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			AND DISCOUNT_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+	</select>
+
+	<!-- DISCOUNT_PROGRAM 매핑 -->
+	<insert id="insertDiscountProgram" parameterType="map">
+		INSERT INTO DISCOUNT_PROGRAM (DISCOUNT_ID, PROGRAM_ID, DISCOUNT_VALUE)
+		VALUES (#{discountId}, #{programId},
+		        <choose><when test="discountValue != null and discountValue != ''">#{discountValue}</when><otherwise>NULL</otherwise></choose>)
+	</insert>
+
+	<delete id="deleteDiscountPrograms" parameterType="string">
+		DELETE FROM DISCOUNT_PROGRAM WHERE DISCOUNT_ID = #{discountId}
+	</delete>
+
+	<select id="selectDiscountProgramIds" parameterType="string" resultType="string">
+		SELECT PROGRAM_ID FROM DISCOUNT_PROGRAM WHERE DISCOUNT_ID = #{discountId}
+	</select>
+
+	<select id="selectDiscountProgramsWithValues" parameterType="string" resultType="egovMap">
+		SELECT PROGRAM_ID, DISCOUNT_VALUE
+		FROM DISCOUNT_PROGRAM
+		WHERE DISCOUNT_ID = #{discountId}
+	</select>
+
+	<!-- 프로그램에 적용 가능한 할인 목록 (온라인예약용) -->
+	<select id="selectApplicableDiscounts" parameterType="map" resultType="egovMap">
+		SELECT D.DISCOUNT_ID, D.DISCOUNT_NM, D.DISCOUNT_TYPE,
+		       COALESCE(DP.DISCOUNT_VALUE, D.DISCOUNT_VALUE) AS DISCOUNT_VALUE,
+		       ISNULL(D.ROUNDING_UNIT, 1) AS ROUNDING_UNIT,
+		       ISNULL(D.ROUNDING_TYPE, 'ROUND') AS ROUNDING_TYPE,
+		       D.APPLY_TIME_FROM, D.APPLY_TIME_TO, D.APPLY_DAYS,
+		       D.APPLY_TICKET_TYPE_ID
+		FROM DISCOUNT D
+		LEFT JOIN DISCOUNT_PROGRAM DP ON D.DISCOUNT_ID = DP.DISCOUNT_ID AND DP.PROGRAM_ID = #{programId}
+		WHERE D.USE_YN = 'Y'
+		  AND (D.START_DATE IS NULL OR D.START_DATE &lt;= #{eventDate})
+		  AND (D.END_DATE IS NULL OR D.END_DATE &gt;= #{eventDate})
+		  AND (NOT EXISTS (SELECT 1 FROM DISCOUNT_PROGRAM DP2 WHERE DP2.DISCOUNT_ID = D.DISCOUNT_ID)
+		       OR EXISTS (SELECT 1 FROM DISCOUNT_PROGRAM DP3 WHERE DP3.DISCOUNT_ID = D.DISCOUNT_ID AND DP3.PROGRAM_ID = #{programId}))
+	</select>
+
+</mapper>

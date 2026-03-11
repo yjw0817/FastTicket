@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ftk.productprice.mapper.ProductPriceMapper">
+
+	<insert id="insertProductPrice" parameterType="productPriceVO">
+		INSERT INTO PRODUCT_PRICE
+			( PPRICE_ID, PROGRAM_ID, TYPE_ID, PRICE, USE_YN, REG_DT )
+		VALUES
+			( #{ppriceId}, #{programId}, #{typeId}, #{price}, 'Y', GETDATE() )
+	</insert>
+
+	<update id="updateProductPrice" parameterType="productPriceVO">
+		UPDATE PRODUCT_PRICE
+		SET PRICE = #{price}
+		WHERE PPRICE_ID = #{ppriceId}
+	</update>
+
+	<delete id="deleteProductPrice" parameterType="productPriceVO">
+		DELETE FROM PRODUCT_PRICE
+		WHERE PPRICE_ID = #{ppriceId}
+	</delete>
+
+	<select id="selectProductPrice" parameterType="productPriceVO" resultType="productPriceVO">
+		SELECT PP.PPRICE_ID, PP.PROGRAM_ID, PP.TYPE_ID, PP.PRICE, PP.USE_YN,
+		       CONVERT(VARCHAR(19), PP.REG_DT, 120) AS regDt,
+		       TT.TYPE_NM AS typeNm
+		FROM PRODUCT_PRICE PP
+		LEFT JOIN TICKET_TYPE TT ON PP.TYPE_ID = TT.TYPE_ID
+		WHERE PP.PPRICE_ID = #{ppriceId}
+	</select>
+
+	<select id="selectProductPriceListByProgram" parameterType="string" resultType="productPriceVO">
+		SELECT PP.PPRICE_ID AS ppriceId, PP.PROGRAM_ID AS programId, PP.TYPE_ID AS typeId,
+		       PP.PRICE AS price, PP.USE_YN AS useYn,
+		       TT.TYPE_NM AS typeNm
+		FROM PRODUCT_PRICE PP
+		LEFT JOIN TICKET_TYPE TT ON PP.TYPE_ID = TT.TYPE_ID
+		WHERE PP.PROGRAM_ID = #{programId}
+		  AND PP.USE_YN = 'Y'
+		  AND (NOT EXISTS (SELECT 1 FROM PROGRAM_TICKET_TYPE PTT WHERE PTT.PROGRAM_ID = PP.PROGRAM_ID)
+		       OR PP.TYPE_ID IN (SELECT PTT.TYPE_ID FROM PROGRAM_TICKET_TYPE PTT WHERE PTT.PROGRAM_ID = PP.PROGRAM_ID))
+		ORDER BY TT.SORT_ORDER ASC
+	</select>
+
+	<delete id="deleteProductPriceByProgram" parameterType="string">
+		DELETE FROM PRODUCT_PRICE
+		WHERE PROGRAM_ID = #{programId}
+	</delete>
+
+</mapper>

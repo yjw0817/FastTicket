@@ -1,0 +1,10 @@
+/* ================================================================
+   FastTicket Admin — CSS Entry Point
+   팀 협업을 위해 영역별로 분리된 CSS를 import
+   ================================================================ */
+@import url('base.css');         /* 변수, 리셋, 타이포그래피 */
+@import url('sidebar.css');      /* 사이드바, 탑바, 레이아웃 */
+@import url('table.css');        /* 콘텐츠 영역, 검색바, 테이블, 페이지네이션 */
+@import url('form.css');         /* 버튼, 폼 테이블, 입력 필드 */
+@import url('components.css');   /* 뱃지, Empty State */
+@import url('misc.css');         /* 기타, 레거시, 모바일 반응형 */
